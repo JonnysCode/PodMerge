@@ -60,6 +60,7 @@ importers:
       postcss: ^8.4.20
       react: ^18.2.0
       react-dom: ^18.2.0
+      solid-store: workspace:*
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -69,6 +70,7 @@ importers:
       next: 13.3.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      solid-store: link:../../packages/solid-store
       ui: link:../../packages/ui
     devDependencies:
       '@types/node': 18.11.17
@@ -96,12 +98,16 @@ importers:
 
   packages/solid-store:
     specifiers:
+      eslint: ^7.32.0
+      eslint-config-custom: workspace:*
       ts-loader: ^9.4.2
       tsconfig: workspace:*
       typescript: ^4.9.4
       webpack: ^5.79.0
       webpack-cli: ^5.0.1
     devDependencies:
+      eslint: 7.32.0
+      eslint-config-custom: link:../eslint-config-custom
       ts-loader: 9.4.2_jflcamw5lswtt7u6jsjwbv554e
       tsconfig: link:../tsconfig
       typescript: 4.9.4
