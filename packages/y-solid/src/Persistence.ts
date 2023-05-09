@@ -174,6 +174,7 @@ export class SolidPersistence extends Observable<string> {
       await handleIncomingRedirect({ restorePreviousSession: true });
       session = getDefaultSession();
     }
+    console.log('session', session);
 
     // NOT LOGGED IN
     if (!session.info.isLoggedIn || !session.info.webId) {

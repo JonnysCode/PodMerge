@@ -5,7 +5,7 @@ import {
   solid,
   access,
   addWebRtc,
-} from '../store/store';
+} from '../store/yjs';
 
 export default function Solid() {
   return (

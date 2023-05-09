@@ -1,6 +1,6 @@
 import { useSyncedStore } from '@syncedstore/react';
 import React from 'react';
-import { globalStore } from '../store/store';
+import { globalStore } from '../store/yjs';
 import { TodoItem } from './TodoItem';
 
 export function TodoList(props: { view: 'all' | 'active' | 'completed' }) {

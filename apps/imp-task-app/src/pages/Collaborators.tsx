@@ -1,12 +1,8 @@
 import React from 'react';
 
-import { Button, Card, TextInput } from 'flowbite-react';
-/*import { Collaborator } from '../store/y-solid/SolidPersistance';
-import {
-  addReadAccess,
-  addWriteAccess,
-  getCollaborators,
-} from '../store/store';
+import { TextInput } from 'flowbite-react';
+import { Collaborator } from 'y-solid';
+import { addReadAccess, addWriteAccess, getCollaborators } from '../store/yjs';
 
 const Collaborators = () => {
   const [webId, setWebId] = React.useState('');
@@ -24,7 +20,7 @@ const Collaborators = () => {
               </h5>
             </div>
             <ul className='divide-y divide-black/25 '>
-              {getCollaborators().map((collaborator, i) => {
+              {getCollaborators().map((collaborator: Collaborator, i: any) => {
                 return (
                   <UserItem
                     collaborator={collaborator}
@@ -114,4 +110,4 @@ const UserItem = (props: UserCardProps) => {
   );
 };
 
-export default Collaborators;*/
+export default Collaborators;

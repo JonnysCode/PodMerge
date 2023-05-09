@@ -1,15 +1,30 @@
 {
   "name": "y-solid",
-  "main": "src/Persistence.ts",
-  "types": "src/Persistence.ts",
+  "version": "0.1.0",
+  "description": "A Yjs binding for Solid",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "check-types": "tsc --noEmit"
+  },
   "dependencies": {
     "@inrupt/solid-client": "^1.24.0",
     "@inrupt/solid-client-authn-browser": "^1.12.3",
     "@inrupt/vocab-common-rdf": "^1.0.5",
+    "buffer": "^6.0.3",
     "lib0": "^0.2.52",
     "yjs": "^13.5.0"
   },
   "devDependencies": {
+    "tsup": "^6.1.3",
     "typescript": "latest"
   }
 }

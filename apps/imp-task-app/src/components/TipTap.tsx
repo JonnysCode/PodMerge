@@ -8,7 +8,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 
-import { globalStore, Task, webrtcProvider } from '../store/store';
+import { globalStore, Task, webrtcProvider } from '../store/yjs';
 import { useSyncedStores } from '@syncedstore/react';
 
 const colors = [

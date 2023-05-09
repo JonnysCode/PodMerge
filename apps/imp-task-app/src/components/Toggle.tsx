@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Switch } from '@headlessui/react';
-import { webrtcConnect, webrtcDisconnect } from '../store/store';
+import { webrtcConnect, webrtcDisconnect } from '../store/yjs';
 
 const Toggle = ({ props }: any) => {
   const [enabled, setEnabled] = useState(true);

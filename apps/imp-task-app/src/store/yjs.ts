@@ -1,7 +1,7 @@
 import { syncedStore, getYjsDoc, SyncedXml } from '@syncedstore/core';
 import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
-import { SolidPersistence } from 'y-solid';
+import { SolidPersistence, login as solidLogin } from 'y-solid';
 
 export type Todos = {
   title: string;
@@ -27,7 +27,7 @@ export type Project = {
   tasks: Task[];
 };
 
-const fileName = 'projects3';
+const fileName = 'projects4';
 
 export const globalStore = syncedStore({
   projects: [] as Project[],
@@ -46,7 +46,7 @@ const solidPersistence = await SolidPersistence.create(
   fileName,
   doc,
   false,
-  'https://storage.inrupt.com/e1ea7746-4998-4493-a241-45860d9427bb//yjs/docs'
+  'https://truthless.inrupt.net/yjs/docs'
 );
 
 export const solid = () => {
@@ -54,7 +54,8 @@ export const solid = () => {
 };
 
 export const login = async (oidcIssuer: string) => {
-  console.log('awaited login');
+  await solidLogin(oidcIssuer);
+  console.log('... Logged in');
 };
 
 export const getCollaborators = () => {

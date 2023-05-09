@@ -18,6 +18,7 @@ import {
   Thing,
 } from '@inrupt/solid-client';
 import { RDF, SCHEMA_INRUPT, DCTERMS } from '@inrupt/vocab-common-rdf';
+import { Buffer } from 'buffer';
 
 const log = logging.createModuleLogger('solid-dataset');
 
