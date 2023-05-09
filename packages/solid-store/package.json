@@ -2,16 +2,13 @@
   "name": "solid-store",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/index.bundle.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": "./dist"
   },
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
   "scripts": {
+    "dev": "webpack --watch --config webpack.config.js",
     "build": "webpack  --config webpack.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,12 +16,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "workspace:*",
     "ts-loader": "^9.4.2",
+    "tsconfig": "workspace:*",
     "typescript": "^4.9.4",
     "webpack": "^5.79.0",
     "webpack-cli": "^5.0.1",
-    "tsconfig": "workspace:*",
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "workspace:*"
+    "webpack-dev-server": "^4.13.2"
   }
 }

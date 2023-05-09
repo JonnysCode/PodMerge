@@ -13,7 +13,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ui": "workspace:*",
-    "solid-store": "workspace:*"
+    "solid-store": "workspace:*",
+    "y-solid": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^18.11.17",
