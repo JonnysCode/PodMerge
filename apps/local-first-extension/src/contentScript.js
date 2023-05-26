@@ -1,6 +1,6 @@
 'use strict';
 
-import { getYjsDoc } from '@syncedstore/core';
+import syncedStore, { getYjsDoc } from '@syncedstore/core';
 import * as Y from 'yjs';
 import * as base64 from 'byte-base64';
 
@@ -36,6 +36,7 @@ console.log(`JSON data URL is: '${jsonUrl}'`);
 
 let dataStore = null;
 let initialState = null;
+let json = null;
 
 // Listen for message
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -44,13 +45,20 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   switch (request.type) {
     case 'EDIT':
       initialState = await fetchStoreState();
-      console.log('Initial state: ', initialState);
-      break;
-    case 'SAVE':
-      getCRDT();
+      dataStore = DataStore.fromDocState(baseUrl, initialState);
+      dataStore.initHtmlProvider();
       break;
     case 'SYNC':
-      dataStore = new DataStore(baseUrl, state);
+      //testSyncedStore();
+      //testSyncedStoreDoc();
+      //console.log('DataStore json: ', dataStore.toJSON());
+      //console.log('DataStore state: ', dataStore.getDocState());
+      getCRDT();
+      break;
+    case 'SAVE':
+      json = await getJSON(jsonUrl);
+      dataStore = DataStore.fromJson(baseUrl, json);
+      dataStore.initHtmlProvider();
       break;
     default:
       break;
@@ -62,23 +70,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   return true;
 });
 
-async function getJSON(url, callback) {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => callback(data))
-    .catch((error) => console.error(error));
-}
+async function getJSON(url) {
+  const response = await fetch(url);
+  const data = await response.json();
 
-function initializeStore() {
-  getJSON(jsonUrl, (data) => {
-    console.log('JSON data: ', data);
-    for (const [key, value] of Object.entries(data)) {
-      store[key] = value;
-    }
-  });
-
-  console.log('Store: ', JSON.stringify(store));
-  contentFromStore();
+  console.log('JSON data: ', data);
+  return data;
 }
 
 async function fetchStoreState() {
@@ -88,4 +85,34 @@ async function fetchStoreState() {
   );
   console.log('[fetch] Result base64: ', stateBase64);
   return stateBase64;
+}
+
+function testSyncedStore() {
+  const doc1 = new Y.Doc();
+  //doc1.getMap('test');
+  const store = syncedStore({ test: {} }, doc1);
+
+  const doc2 = new Y.Doc();
+  doc2.getMap('test').set('a', 1);
+  const state = Y.encodeStateAsUpdate(doc2);
+
+  Y.applyUpdate(doc1, state);
+
+  console.log('doc1: ', doc1.toJSON());
+  console.log('doc2: ', doc2.toJSON());
+  console.log('store: ', store);
+  console.log('store.test.a: ', store.test.a);
+  console.log('store doc: ', getYjsDoc(store).toJSON());
+}
+
+function testSyncedStoreDoc() {
+  const store = syncedStore({ test: {} });
+  const doc1 = getYjsDoc(store);
+
+  const map = doc1.getMap('test');
+  map.set('a', 1);
+
+  console.log('doc1: ', doc1.toJSON());
+  console.log('store: ', store);
+  console.log('store.test.a: ', store.test.a);
 }

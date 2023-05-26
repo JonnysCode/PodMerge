@@ -24,11 +24,18 @@ export async function getCRDT() {
   console.log('Document: ', await content.document);
   console.log('Document type: ', await content.document.type);
   console.log('Document format: ', await content.document.format.value);
-  console.log('Document operation: ', await content.document.operation);
-
-
-  console.log(`The label is ${await content.label}`);
-  console.log(`The name is ${await content.name}`);
+  console.log(
+    'Document operation type: ',
+    await content.document.operation.type
+  );
+  console.log(
+    'Document operation method: ',
+    await content.document.operation.method.value
+  );
+  console.log(
+    'Document operation href: ',
+    await content.document.operation.href.value
+  );
 }
 
 export async function showPerson() {
@@ -45,4 +52,19 @@ export async function showPerson() {
   console.log('Trusted apps:');
   for await (const origin of person.trustedApp.origin)
     console.log(`- ${origin}`);
+}
+
+async function callHttpOperation(operation) {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  const response = await constructRequest(
+    operation.href.value,
+    operation.method.value,
+    headers,
+    operation.body
+  );
+
+  console.log('Response: ', response);
 }

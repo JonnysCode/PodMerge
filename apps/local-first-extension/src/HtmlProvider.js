@@ -23,6 +23,7 @@ export class HtmlProvider extends Observable {
     // listen to an event that fires when a remote update is received
     this.on('update', (update) => {
       Y.applyUpdate(this.ydoc, update, this); // the third parameter sets the transaction-origin
+      console.log('[HTML Provider] Update applied: ', update);
     });
   }
 
@@ -36,7 +37,7 @@ export class HtmlProvider extends Observable {
   initElement(element) {
     element.setAttribute('contentEditable', 'true');
     const dataAttribute = element.getAttribute(this.dataAttribute);
-    element.textContent = this.storeValue(dataAttribute) || '[empty]';
+    element.textContent = '<>' + this.storeValue(dataAttribute) || '[empty]';
 
     const boundHandleInputChange = this.handleInputChange.bind(this);
     element.addEventListener('input', boundHandleInputChange, false);
@@ -44,15 +45,13 @@ export class HtmlProvider extends Observable {
 
   handleInputChange(event) {
     const updatedValue = event.target.textContent;
-    console.log('[HTML Provider] attribute: ', this.dataAttribute);
     const dataAttribute = event.target.getAttribute(this.dataAttribute);
-    console.log('[HTML Provider] Update: ', dataAttribute, updatedValue);
-
+    //console.log('[HTML Provider] Update: ', dataAttribute, updatedValue);
     this.updateStore(dataAttribute, updatedValue);
   }
 
   updateStore(dataAttribute, updatedValue) {
-    let currentObj = this.store;
+    let currentObj = this.store.data;
     let storagePath = dataAttributeToArray(dataAttribute);
     for (let i = 0; i < storagePath.length - 1; i++) {
       currentObj = currentObj[storagePath[i]];
@@ -67,25 +66,19 @@ export class HtmlProvider extends Observable {
 
   storeValue(dataAttribute) {
     const storagePath = dataAttributeToArray(dataAttribute);
-    let currentObj = this.store;
+    let currentObj = this.store.data;
     for (let i = 0; i < storagePath.length; i++) {
       currentObj = currentObj[storagePath[i]];
     }
-    console.log(
-      '[HTML Provider] Store value: ',
-      currentObj,
-      ' for data attribute: ',
-      dataAttribute
-    );
     return currentObj;
   }
 }
 
 /**
- * Gets a data attribute from an element and converts it to an array.
- * Example: data-yjs="about-p-0" => ['about', 'p', 0]
+ * Gets an attribute value from an element and converts it to an array.
+ * Example: "about-p-0" => ['about', 'p', 0]
  * @param {string} str
- * @returns {[]}
+ * @returns {Array<string|number>}
  */
 function dataAttributeToArray(str) {
   const arr = str.split('-');
