@@ -9,6 +9,7 @@ import { getCRDT, showPerson } from './query.js';
 import { constructRequest } from './fetch.js';
 import { base64ToBytes, bytesToBase64 } from 'byte-base64';
 import { HtmlProvider } from './HtmlProvider.js';
+import { LDStore } from './LDStore.js';
 
 export class DataStore {
   constructor(name, root = 'data') {
@@ -16,6 +17,9 @@ export class DataStore {
     this.root = root;
     this.rootShape = createObjectWithRoot(root);
     this.rootStore = syncedStore(this.rootShape);
+    this.ldStore = new LDStore(
+      'https://imp.inrupt.net/local-first/blog/context.ttl'
+    );
 
     this.htmlProvider = null;
     this.webrtcProvider = null;

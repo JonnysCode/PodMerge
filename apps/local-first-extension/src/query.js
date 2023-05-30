@@ -2,6 +2,7 @@ import { PathFactory } from 'ldflex';
 import ComunicaEngine from '@ldflex/comunica';
 import { namedNode } from '@rdfjs/data-model';
 import context from './context.json';
+import { constructRequest } from './fetch';
 
 const profileCard = 'https://imp.inrupt.net/profile/card';
 const blogTtl = 'https://imp.inrupt.net/local-first/blog/context.ttl';
@@ -15,6 +16,8 @@ const content = path.create({
 
 console.log('Content namespace: ', content.namespace);
 console.log('Content fragment: ', content.fragment);
+
+export async function getDocumentOperation() {}
 
 export async function getCRDT() {
   console.log('Content: ', await content);
@@ -55,16 +58,10 @@ export async function showPerson() {
 }
 
 async function callHttpOperation(operation) {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  const href = await operation.href.value;
+  const method = await operation.method.value;
 
-  const response = await constructRequest(
-    operation.href.value,
-    operation.method.value,
-    headers,
-    operation.body
-  );
+  const response = await constructRequest(href, method);
 
   console.log('Response: ', response);
 }

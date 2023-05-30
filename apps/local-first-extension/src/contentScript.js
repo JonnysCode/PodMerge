@@ -7,6 +7,7 @@ import * as base64 from 'byte-base64';
 import { getCRDT } from './query.js';
 import { constructRequest } from './fetch.js';
 import { DataStore } from './DataStore.js';
+import { LDStore } from './LDStore.js';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -38,13 +39,18 @@ let dataStore = null;
 let initialState = null;
 let json = null;
 
+const ldStore = new LDStore(
+  'https://imp.inrupt.net/local-first/blog/context.ttl'
+);
+
 // Listen for message
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   console.log('Message received in contentScript file');
 
   switch (request.type) {
     case 'EDIT':
-      initialState = await fetchStoreState();
+      //initialState = await fetchStoreState();
+      initialState = await ldStore.getDocument();
       dataStore = DataStore.fromDocState(baseUrl, initialState);
       dataStore.initHtmlProvider();
       dataStore.initWebrtcProvider();
