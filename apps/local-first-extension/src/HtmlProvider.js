@@ -13,17 +13,15 @@ export class HtmlProvider extends Observable {
     this.init();
 
     this.ydoc.on('update', (update, origin) => {
-      // ignore updates applied by this provider
-      if (origin !== this) {
-        // this update was produced either locally or by another provider.
-        console.log('[HTML Provider] Update: ', update, ' Origin: ', origin);
+      if (origin !== this && origin !== null) {
+        console.log('[HTML Provider] Update from ', origin);
         this.emit('update', [update]);
       }
     });
-    // listen to an event that fires when a remote update is received
+
     this.on('update', (update) => {
-      Y.applyUpdate(this.ydoc, update, this); // the third parameter sets the transaction-origin
-      console.log('[HTML Provider] Update applied: ', update);
+      Y.applyUpdate(this.ydoc, update, this);
+      this.init();
     });
   }
 
@@ -37,7 +35,7 @@ export class HtmlProvider extends Observable {
   initElement(element) {
     element.setAttribute('contentEditable', 'true');
     const dataAttribute = element.getAttribute(this.dataAttribute);
-    element.textContent = '<>' + this.storeValue(dataAttribute) || '[empty]';
+    element.textContent = this.storeValue(dataAttribute) || '[empty]';
 
     const boundHandleInputChange = this.handleInputChange.bind(this);
     element.addEventListener('input', boundHandleInputChange, false);
@@ -46,7 +44,6 @@ export class HtmlProvider extends Observable {
   handleInputChange(event) {
     const updatedValue = event.target.textContent;
     const dataAttribute = event.target.getAttribute(this.dataAttribute);
-    //console.log('[HTML Provider] Update: ', dataAttribute, updatedValue);
     this.updateStore(dataAttribute, updatedValue);
   }
 

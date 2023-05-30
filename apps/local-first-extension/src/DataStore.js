@@ -39,14 +39,8 @@ export class DataStore {
   }
 
   initWebrtcProvider() {
-    this.webrtcProvider = new WebrtcProvider(this.rootDoc, {
-      signaling: [
-        'wss://signaling.yjs.dev',
-        'wss://y-webrtc-signaling-eu.herokuapp.com',
-        'wss://y-webrtc-signaling-us.herokuapp.com',
-      ],
-      room: this.name,
-      password: null,
+    this.webrtcProvider = new WebrtcProvider(this.name, this.rootDoc, {
+      signaling: ['ws://localhost:4444'],
     });
   }
 

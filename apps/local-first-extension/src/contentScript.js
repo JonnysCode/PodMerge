@@ -47,6 +47,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       initialState = await fetchStoreState();
       dataStore = DataStore.fromDocState(baseUrl, initialState);
       dataStore.initHtmlProvider();
+      dataStore.initWebrtcProvider();
       break;
     case 'SYNC':
       //testSyncedStore();
