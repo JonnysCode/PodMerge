@@ -14,9 +14,6 @@ const content = path.create({
   subject: namedNode(blogTtl + '#content'),
 });
 
-console.log('Content namespace: ', content.namespace);
-console.log('Content fragment: ', content.fragment);
-
 export async function getDocumentOperation() {}
 
 export async function getCRDT() {

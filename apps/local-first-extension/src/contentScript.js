@@ -8,6 +8,7 @@ import { getCRDT } from './query.js';
 import { constructRequest } from './fetch.js';
 import { DataStore } from './DataStore.js';
 import { LDStore } from './LDStore.js';
+import { loginSolid } from './solid.js';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -36,8 +37,9 @@ const jsonUrl = baseUrl + 'content.json';
 console.log(`JSON data URL is: '${jsonUrl}'`);
 
 let dataStore = null;
-let initialState = null;
+let docState = null;
 let json = null;
+let session = null;
 
 const ldStore = new LDStore(
   'https://imp.inrupt.net/local-first/blog/context.ttl'
@@ -48,22 +50,27 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   console.log('Message received in contentScript file');
 
   switch (request.type) {
+    case 'LOGIN':
+      await loginSolid();
+      break;
     case 'EDIT':
       //initialState = await fetchStoreState();
-      initialState = await ldStore.getDocument();
-      dataStore = DataStore.fromDocState(baseUrl, initialState);
+      docState = await ldStore.getDocument();
+      dataStore = DataStore.fromDocState(baseUrl, docState);
       dataStore.initHtmlProvider();
-      dataStore.initWebrtcProvider();
       break;
     case 'SYNC':
-      //testSyncedStore();
-      //testSyncedStoreDoc();
-      //console.log('DataStore json: ', dataStore.toJSON());
-      //console.log('DataStore state: ', dataStore.getDocState());
-      getCRDT();
+      dataStore.initWebrtcProvider();
       break;
     case 'SAVE':
+      //await ldStore.documentOperations();
+      docState = dataStore.getDocState();
+      console.log('DocState: ', docState);
+      await ldStore.saveDocument(docState);
+      break;
+    case 'JSON':
       json = await getJSON(jsonUrl);
+      console.log('JSON data: ', json);
       dataStore = DataStore.fromJson(baseUrl, json);
       dataStore.initHtmlProvider();
       break;

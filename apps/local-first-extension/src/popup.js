@@ -6,6 +6,7 @@ import './popup.css';
   const editBtn = document.getElementById('edit-btn');
   const syncBtn = document.getElementById('sync-btn');
   const saveBtn = document.getElementById('save-btn');
+  const loginBtn = document.getElementById('login-btn');
   //const websiteNameEl = document.getElementById('website-name');
 
   const store = { about: { title: 'About Title' } };
@@ -15,56 +16,10 @@ import './popup.css';
     //websiteNameEl.textContent = websiteName;
   });
 
-  editBtn.addEventListener('click', () => {
-    console.log('EDIT button clicked');
-
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            type: 'EDIT',
-            payload: { message: 'payload edit message', store: store },
-          },
-          (response) => {
-            console.log('Current count value passed to contentScript file');
-          }
-        );
-      });
-    });
-  });
-
-  syncBtn.addEventListener('click', () => {
-    console.log('SYNC button clicked');
-
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-
-        chrome.tabs.sendMessage(tab.id, {
-          type: 'SYNC',
-          payload: { message: 'payload sync message', store: store },
-        });
-      });
-    });
-  });
-
-  saveBtn.addEventListener('click', () => {
-    console.log('SAVE button clicked');
-
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-
-        chrome.tabs.sendMessage(tab.id, {
-          type: 'SAVE',
-          payload: { message: 'payload save message' },
-        });
-      });
-    });
-  });
+  editBtn.addEventListener('click', () => onBtnClick('EDIT'));
+  syncBtn.addEventListener('click', () => onBtnClick('SYNC'));
+  saveBtn.addEventListener('click', () => onBtnClick('SAVE'));
+  loginBtn.addEventListener('click', () => onBtnClick('LOGIN'));
 
   function onLoadedDOM() {
     // Restore count value
@@ -86,3 +41,24 @@ import './popup.css';
     }
   );
 })();
+
+function onBtnClick(type) {
+  console.log(`${type} button clicked`);
+
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs[0];
+
+      chrome.tabs.sendMessage(
+        tab.id,
+        {
+          type: type,
+          payload: { message: `payload ${type} message` },
+        },
+        (response) => {
+          console.log('[Popup] Response: ', response.message);
+        }
+      );
+    });
+  });
+}

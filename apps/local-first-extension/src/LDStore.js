@@ -1,6 +1,7 @@
 import { PathFactory } from 'ldflex';
 import ComunicaEngine from '@ldflex/comunica';
 import { namedNode } from '@rdfjs/data-model';
+
 import context from './context.json';
 import { constructRequest } from './fetch';
 
@@ -17,22 +18,39 @@ export class LDStore {
   }
 
   async getDocument() {
-    const operation = this.resource.document.operation;
+    const operation = await getOperationByType(this.resource.document, 'Read');
+    await logOperation(operation);
     const result = await this.invokeOperation(operation);
 
     return result;
   }
 
-  async updateDocument(document) {
-    const operation = this.resource.document.operation;
-    const result = await this.invokeOperation(operation, {}, document);
+  async saveDocument(document) {
+    const operation = await getOperationByType(
+      this.resource.document,
+      'Update'
+    );
 
-    return result;
+    const format = await this.resource.document.format.value;
+
+    const header = {
+      'Content-Type': format,
+    };
+
+    console.log('Header: ', header);
+
+    await logOperation(operation);
+    return await this.invokeOperation(operation, header, document);
+  }
+
+  async documentOperations() {
+    const operation = await getOperationByType(this.resource.document, 'Read');
+    console.log('Read Operation');
+    await logOperation(operation);
   }
 
   async invokeOperation(operation, header, body) {
     const operationName = iriName(await operation.type.value);
-    console.log('[LdCrdt] Operation: ', operationName);
 
     switch (operationName) {
       case 'HttpOperation':
@@ -50,7 +68,7 @@ export class LDStore {
     const href = await operation.href.value;
     const method = await operation.method.value;
 
-    const response = await constructRequest(href, method, {}, body);
+    const response = await constructRequest(href, method, header, body);
     console.log('Response: ', response);
 
     return response;
@@ -86,4 +104,29 @@ function iriName(namedNodeIRI) {
     lastIndex !== -1 ? lastIndex : namedNodeIRI.lastIndexOf('/');
 
   return namedNodeIRI.substring(separatorIndex + 1);
+}
+
+async function getOperations(thing) {
+  return await thing.operation.list();
+}
+
+async function getOperationByType(thing, operationType) {
+  const operations = await getOperations(thing);
+
+  for (const operation of operations) {
+    const type = iriName(await operation.operationType.value);
+    if (type === operationType) {
+      console.log('Found operation with type: ', type);
+      return operation;
+    }
+  }
+  return null;
+}
+
+async function logOperation(operation) {
+  const type = iriName(await operation.type.value);
+  const method = await operation.method.value;
+  const href = await operation.href.value;
+
+  console.log(type, method, href);
 }

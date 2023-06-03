@@ -68,6 +68,9 @@ const common = {
       stream: require.resolve('stream-browserify'),
       querystring: require.resolve('querystring-es3'),
       url: require.resolve('url/'),
+      assert: require.resolve('assert/'),
+      util: require.resolve('util/'),
+      crypto: require.resolve('crypto-browserify'),
     },
   },
 };

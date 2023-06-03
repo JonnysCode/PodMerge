@@ -74,11 +74,11 @@ export class DataStore {
   }
 
   toJSON() {
-    return this.doc.toJSON();
+    return this.rootDoc.toJSON();
   }
 
   getDocState() {
-    return bytesToBase64(Y.encodeStateAsUpdate(this.doc));
+    return bytesToBase64(Y.encodeStateAsUpdate(this.rootDoc));
   }
 
   async fetchStoreState() {
