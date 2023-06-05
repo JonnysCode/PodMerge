@@ -3,7 +3,7 @@ import ComunicaEngine from '@ldflex/comunica';
 import { namedNode } from '@rdfjs/data-model';
 
 import context from './context.json';
-import { constructRequest } from './fetch';
+import { constructRequest } from '../solid/fetch';
 
 export class LDStore {
   constructor(entryPath, nodeName = '#content') {
@@ -15,6 +15,12 @@ export class LDStore {
     this.resource = this.path.create({
       subject: namedNode(entryPath + nodeName),
     });
+  }
+
+  async getFramework() {
+    const framework = iriName(await this.resource.framework);
+    console.log('Framework: ', framework);
+    return framework;
   }
 
   async getDocument() {

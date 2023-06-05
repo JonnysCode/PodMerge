@@ -5,11 +5,11 @@ import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 
-import { getCRDT, showPerson } from './query.js';
-import { constructRequest } from './fetch.js';
+import { getCRDT, showPerson } from '../LD/query.js';
+import { constructRequest } from '../solid/fetch.js';
 import { base64ToBytes, bytesToBase64 } from 'byte-base64';
 import { HtmlProvider } from './HtmlProvider.js';
-import { LDStore } from './LDStore.js';
+import { LDStore } from '../LD/LDStore.js';
 
 export class DataStore {
   constructor(name, root = 'data') {
@@ -65,7 +65,7 @@ export class DataStore {
 
   static fromJson(name, json) {
     const data = new DataStore(name);
-    const rootMap = data.doc.getMap(data.root);
+    const rootMap = data.rootDoc.getMap(data.root);
     nestedYDocFromJson(json, rootMap);
 
     console.log('[DataStore] dataStore.doc: ', data.doc.toJSON());

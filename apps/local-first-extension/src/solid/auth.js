@@ -22,15 +22,10 @@ export async function loginSolid() {
   return session;
 }
 
-export async function loginSolid2() {
-  const session = await getSession();
-  if (!session) {
-    await login({
-      oidcIssuer: 'https://inrupt.net',
-      popUp: true,
-      redirectUrl: window.location.href,
-    });
-  }
-  console.log('Session: ', session);
+export async function getSession() {
+  await handleIncomingRedirect();
+  let session = getDefaultSession();
+
+  console.log('Session: ', session.info);
   return session;
 }

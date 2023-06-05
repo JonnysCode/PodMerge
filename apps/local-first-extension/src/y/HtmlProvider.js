@@ -10,7 +10,7 @@ export class HtmlProvider extends Observable {
     this.store = store;
     this.dataAttribute = dataAttribute;
 
-    this.init();
+    this.render();
 
     this.ydoc.on('update', (update, origin) => {
       if (origin !== this && origin !== null) {
@@ -21,24 +21,27 @@ export class HtmlProvider extends Observable {
 
     this.on('update', (update) => {
       Y.applyUpdate(this.ydoc, update, this);
-      this.init();
+      this.render();
     });
   }
 
-  init() {
+  render() {
     const dataEls = document.querySelectorAll(`[${this.dataAttribute}]`);
     for (const element of dataEls) {
-      this.initElement(element);
+      this.renderElement(element);
+      this.addInputListener(element);
     }
   }
 
-  initElement(element) {
+  addInputListener(element) {
+    const boundHandleInputChange = this.handleInputChange.bind(this);
+    element.addEventListener('input', boundHandleInputChange, false);
+  }
+
+  renderElement(element) {
     element.setAttribute('contentEditable', 'true');
     const dataAttribute = element.getAttribute(this.dataAttribute);
     element.textContent = this.storeValue(dataAttribute) || '[empty]';
-
-    const boundHandleInputChange = this.handleInputChange.bind(this);
-    element.addEventListener('input', boundHandleInputChange, false);
   }
 
   handleInputChange(event) {

@@ -2,7 +2,7 @@ import { PathFactory } from 'ldflex';
 import ComunicaEngine from '@ldflex/comunica';
 import { namedNode } from '@rdfjs/data-model';
 import context from './context.json';
-import { constructRequest } from './fetch';
+import { constructRequest } from '../solid/fetch';
 
 const profileCard = 'https://imp.inrupt.net/profile/card';
 const blogTtl = 'https://imp.inrupt.net/local-first/blog/context.ttl';
