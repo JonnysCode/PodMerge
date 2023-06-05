@@ -4,11 +4,11 @@ import syncedStore, { getYjsDoc } from '@syncedstore/core';
 import * as Y from 'yjs';
 import * as base64 from 'byte-base64';
 
-import { getCRDT } from './query.js';
-import { constructRequest } from './fetch.js';
-import { DataStore } from './DataStore.js';
-import { LDStore } from './LDStore.js';
-import { loginSolid } from './solid.js';
+import { getCRDT } from './LD/query.js';
+import { constructRequest } from './solid/fetch.js';
+import { DataStore } from './y/DataStore.js';
+import { LDStore } from './LD/LDStore.js';
+import { getSession, loginSolid } from './solid/auth.js';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -39,7 +39,7 @@ console.log(`JSON data URL is: '${jsonUrl}'`);
 let dataStore = null;
 let docState = null;
 let json = null;
-let session = null;
+let session = getSession();
 
 const ldStore = new LDStore(
   'https://imp.inrupt.net/local-first/blog/context.ttl'
@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
   switch (request.type) {
     case 'LOGIN':
-      await loginSolid();
+      session = await loginSolid();
       break;
     case 'EDIT':
       //initialState = await fetchStoreState();
@@ -73,6 +73,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       console.log('JSON data: ', json);
       dataStore = DataStore.fromJson(baseUrl, json);
       dataStore.initHtmlProvider();
+      break;
+    case 'LOG':
+      console.log('Session: ', session);
+      console.log('Framework: ', await ldStore.getFramework());
+      break;
+    case 'TEST':
+      console.log('Test...');
       break;
     default:
       break;

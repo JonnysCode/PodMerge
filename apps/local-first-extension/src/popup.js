@@ -7,19 +7,17 @@ import './popup.css';
   const syncBtn = document.getElementById('sync-btn');
   const saveBtn = document.getElementById('save-btn');
   const loginBtn = document.getElementById('login-btn');
-  //const websiteNameEl = document.getElementById('website-name');
-
-  const store = { about: { title: 'About Title' } };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    //const websiteName = window.location.hostname;
-    //websiteNameEl.textContent = websiteName;
-  });
+  const logBtn = document.getElementById('log-btn');
+  const jsonBtn = document.getElementById('json-btn');
+  const testBtn = document.getElementById('test-btn');
 
   editBtn.addEventListener('click', () => onBtnClick('EDIT'));
   syncBtn.addEventListener('click', () => onBtnClick('SYNC'));
   saveBtn.addEventListener('click', () => onBtnClick('SAVE'));
   loginBtn.addEventListener('click', () => onBtnClick('LOGIN'));
+  logBtn.addEventListener('click', () => onBtnClick('LOG'));
+  jsonBtn.addEventListener('click', () => onBtnClick('JSON'));
+  testBtn.addEventListener('click', () => onBtnClick('TEST'));
 
   function onLoadedDOM() {
     // Restore count value

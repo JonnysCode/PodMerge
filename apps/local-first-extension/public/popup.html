@@ -9,15 +9,25 @@
     <div class="app">
       <h1>Make this Website Collaborative</h1>
 
-      <button id="login-btn" class="btn-neutral">Login</button>
-      <p class="explainer">Login to Solid</p>
+      <div class="button-row">
+        <div class="button-column">
+          <button id="edit-btn" class="btn-blue">Edit</button>
+          <p class="explainer">
+            Click to start editing the page collaboratively
+          </p>
+          <button id="sync-btn">Sync</button>
+          <p class="explainer">Click to enable real-time collaboration</p>
+          <button id="save-btn" class="btn-red">Save</button>
+          <p class="explainer">Click to save your changes</p>
+        </div>
 
-      <button id="edit-btn" class="btn-blue">Edit</button>
-      <p class="explainer">Click to start editing the page collaboratively</p>
-      <button id="sync-btn">Sync</button>
-      <p class="explainer">Click to enable real-time collaboration</p>
-      <button id="save-btn" class="btn-red">Save</button>
-      <p class="explainer">Click to save your changes</p>
+        <div class="button-column">
+          <button id="login-btn" class="btn-neutral">Login</button>
+          <button id="log-btn" class="btn-neutral">Log</button>
+          <button id="json-btn" class="btn-neutral">JSON</button>
+          <button id="test-btn" class="btn-neutral">Test</button>
+        </div>
+      </div>
     </div>
 
     <script src="popup.js"></script>
