@@ -18,6 +18,7 @@ const common = {
     path: PATHS.build,
     // the filename template for entry chunks
     filename: '[name].js',
+    publicPath: '/',
   },
   stats: {
     all: false,
@@ -63,7 +64,7 @@ const common = {
       filename: '[name].css',
     }),
   ],
-  experiments: { asyncWebAssembly: true },
+  experiments: { asyncWebAssembly: true, topLevelAwait: true },
   performance: {
     // we dont want the wasm blob to generate warnings
     hints: false,

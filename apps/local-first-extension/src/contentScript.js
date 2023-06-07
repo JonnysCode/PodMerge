@@ -9,6 +9,8 @@ import { constructRequest } from './solid/fetch.js';
 import { DataStore } from './y/DataStore.js';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
+import { sendGlobalMessage } from './util.js';
+import { Content } from './Content.js';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -40,10 +42,11 @@ let dataStore = null;
 let docState = null;
 let json = null;
 let session = getSession();
+let content = null;
 
-const ldStore = new LDStore(
-  'https://imp.inrupt.net/local-first/blog/context.ttl'
-);
+const ldStore = new LDStore(baseUrl + 'context.ttl');
+const framework = await ldStore.getFramework();
+console.log('Framework: ', framework);
 
 // Listen for message
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -63,17 +66,35 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       dataStore.initWebrtcProvider();
       break;
     case 'SAVE':
-      //await ldStore.documentOperations();
-      docState = dataStore.getDocState();
+      if (framework === 'Yjs') {
+        docState = dataStore.getDocState();
+      } else if (framework === 'Automerge') {
+        let response = await sendGlobalMessage('STATE', {});
+        docState = response.payload;
+      }
+
       console.log('DocState: ', docState);
       await ldStore.saveDocument(docState);
       break;
     case 'JSON':
       json = await getJSON(jsonUrl);
       console.log('JSON data: ', json);
-      dataStore = DataStore.fromJson(baseUrl, json);
-      dataStore.initHtmlProvider();
+
+      if (framework === 'Yjs') {
+        dataStore = DataStore.fromJson(baseUrl, json);
+        dataStore.initHtmlProvider();
+        console.log('DataStore doc: ', dataStore.doc);
+      } else if (framework === 'Automerge') {
+        const response = await sendGlobalMessage('INIT', { json: json });
+        dataStore = response.payload;
+        console.log('[Automerge] DataStore: ', dataStore);
+
+        content = new Content(dataStore);
+      }
       break;
+    case 'AM_CREATED':
+      dataStore = request.payload.store;
+      console.log('[AM_CREATED] DataStore: ', dataStore);
     case 'LOG':
       console.log('Session: ', session);
       console.log('Framework: ', await ldStore.getFramework());

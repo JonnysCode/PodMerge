@@ -18,9 +18,7 @@ export class LDStore {
   }
 
   async getFramework() {
-    const framework = iriName(await this.resource.framework);
-    console.log('Framework: ', framework);
-    return framework;
+    return iriName(await this.resource.framework.value);
   }
 
   async getDocument() {

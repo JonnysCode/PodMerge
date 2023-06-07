@@ -1,6 +1,7 @@
 'use strict';
 
 import './popup.css';
+import { sendTabMessage } from './util';
 
 (function () {
   const editBtn = document.getElementById('edit-btn');
@@ -25,38 +26,10 @@ import './popup.css';
   }
 
   document.addEventListener('DOMContentLoaded', onLoadedDOM);
-
-  // Communicate with background file by sending a message
-  chrome.runtime.sendMessage(
-    {
-      type: 'GREETINGS',
-      payload: {
-        message: 'Hello, my name is Pop. I am from Popup.',
-      },
-    },
-    (response) => {
-      console.log(response.message);
-    }
-  );
 })();
 
-function onBtnClick(type) {
+async function onBtnClick(type) {
   console.log(`${type} button clicked`);
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tab = tabs[0];
-
-      chrome.tabs.sendMessage(
-        tab.id,
-        {
-          type: type,
-          payload: { message: `payload ${type} message` },
-        },
-        (response) => {
-          console.log('[Popup] Response: ', response.message);
-        }
-      );
-    });
-  });
+  await sendTabMessage(type, { message: `payload ${type} message` });
 }

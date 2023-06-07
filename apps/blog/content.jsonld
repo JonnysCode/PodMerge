@@ -1,0 +1,35 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@base": "https://imp.inrupt.net/local-first/blog/",
+    "crdt": "https://imp.inrupt.net/ontologies/crdt.ttl#",
+    "htv": "http://www.w3.org/2011/http#",
+    "framework": "crdt:framework",
+    "document": "crdt:document",
+    "operation": {
+      "@id": "crdt:operation",
+      "@container": "@type"
+    }
+  },
+  "@id": "content.jsonld",
+  "@type": "crdt:Resource",
+  "framework": "Yjs",
+  "document": {
+    "@id": "content.bin",
+    "@type": "crdt:Document",
+    "operation": [
+      {
+        "@type": "crdt:HttpOperation",
+        "crdt:href": "https://imp.inrupt.net/local-first/blog/content.bin",
+        "crdt:operationType": "crdt:Read",
+        "crdt:method": "GET"
+      },
+      {
+        "@type": "crdt:HttpOperation",
+        "crdt:href": "https://imp.inrupt.net/local-first/blog/content.bin",
+        "crdt:operationType": "crdt:Update",
+        "htv:methodName": "PUT"
+      }
+    ]
+  }
+}
