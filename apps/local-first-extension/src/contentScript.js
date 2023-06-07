@@ -6,11 +6,12 @@ import * as base64 from 'byte-base64';
 
 import { getCRDT } from './LD/query.js';
 import { constructRequest } from './solid/fetch.js';
-import { DataStore } from './y/DataStore.js';
+import { YjsStore } from './y/YjsStore.js';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';
-import { Content } from './Content.js';
+import { ContentProvider } from './ContentProvider.js';
+import { YjsContentProvider } from './y/YjsContentProvider.js';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -38,11 +39,9 @@ const baseUrl = currentPageUrl.substring(
 const jsonUrl = baseUrl + 'content.json';
 console.log(`JSON data URL is: '${jsonUrl}'`);
 
-let dataStore = null;
-let docState = null;
-let json = null;
+let store = null;
 let session = getSession();
-let content = null;
+let contentProvider = null;
 
 const ldStore = new LDStore(baseUrl + 'context.ttl');
 const framework = await ldStore.getFramework();
@@ -50,51 +49,25 @@ console.log('Framework: ', framework);
 
 // Listen for message
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  console.log('Message received in contentScript file');
-
   switch (request.type) {
     case 'LOGIN':
       session = await loginSolid();
       break;
     case 'EDIT':
-      //initialState = await fetchStoreState();
-      docState = await ldStore.getDocument();
-      dataStore = DataStore.fromDocState(baseUrl, docState);
-      dataStore.initHtmlProvider();
+      initFromState();
       break;
     case 'SYNC':
-      dataStore.initWebrtcProvider();
+      initSync();
       break;
     case 'SAVE':
-      if (framework === 'Yjs') {
-        docState = dataStore.getDocState();
-      } else if (framework === 'Automerge') {
-        let response = await sendGlobalMessage('STATE', {});
-        docState = response.payload;
-      }
-
-      console.log('DocState: ', docState);
-      await ldStore.saveDocument(docState);
+      save();
       break;
     case 'JSON':
-      json = await getJSON(jsonUrl);
-      console.log('JSON data: ', json);
-
-      if (framework === 'Yjs') {
-        dataStore = DataStore.fromJson(baseUrl, json);
-        dataStore.initHtmlProvider();
-        console.log('DataStore doc: ', dataStore.doc);
-      } else if (framework === 'Automerge') {
-        const response = await sendGlobalMessage('INIT', { json: json });
-        dataStore = response.payload;
-        console.log('[Automerge] DataStore: ', dataStore);
-
-        content = new Content(dataStore);
-      }
+      initFromJson();
       break;
     case 'AM_CREATED':
-      dataStore = request.payload.store;
-      console.log('[AM_CREATED] DataStore: ', dataStore);
+      store = request.payload.store;
+      console.log('[AM_CREATED] DataStore: ', store);
     case 'LOG':
       console.log('Session: ', session);
       console.log('Framework: ', await ldStore.getFramework());
@@ -106,11 +79,77 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       break;
   }
 
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
   sendResponse({});
   return true;
 });
+
+async function initFromState() {
+  console.log('Edit content...');
+
+  let state = await ldStore.getDocument();
+
+  if (framework === 'Yjs') {
+    store = YjsStore.fromDocState(baseUrl, state);
+    contentProvider = new YjsContentProvider(store.rootStore);
+  } else if (framework === 'Automerge') {
+    const response = await sendGlobalMessage('INIT', {
+      name: baseUrl,
+      state: state,
+    });
+    store = response.payload;
+    contentProvider = new ContentProvider(store);
+  }
+}
+
+async function initFromJson() {
+  console.log('Init from JSON...');
+  let json = await getJSON(jsonUrl);
+
+  if (framework === 'Yjs') {
+    store = YjsStore.fromJson(baseUrl, json);
+    contentProvider = new YjsContentProvider(store.rootStore);
+  } else if (framework === 'Automerge') {
+    const response = await sendGlobalMessage('INIT', {
+      name: baseUrl,
+      json: json,
+    });
+    store = response.payload;
+    contentProvider = new ContentProvider(store);
+  }
+}
+
+async function initSync() {
+  console.log('Sync content...');
+
+  // Get the real-time sync operation for the document from the context
+  //docState = await ldStore.getDocument();
+
+  if (framework === 'Yjs') {
+    store.initWebrtcProvider();
+  } else if (framework === 'Automerge') {
+    console.log('Currently no sync for Automerge');
+  }
+}
+
+async function save() {
+  console.log('Save content...');
+
+  let state,
+    json = null;
+  if (framework === 'Yjs') {
+    state = store.state;
+    json = store.json;
+  } else if (framework === 'Automerge') {
+    let response = await sendGlobalMessage('STATE', {});
+    state = response.state;
+    json = response.json;
+  }
+
+  console.log('DocState: ', state);
+  console.log('JSON: ', json);
+
+  await ldStore.saveDocument(state);
+}
 
 async function getJSON(url) {
   const response = await fetch(url);
@@ -118,43 +157,4 @@ async function getJSON(url) {
 
   console.log('JSON data: ', data);
   return data;
-}
-
-async function fetchStoreState() {
-  const stateBase64 = await constructRequest(
-    'https://imp.inrupt.net/local-first/blog/content.bin',
-    'GET'
-  );
-  console.log('[fetch] Result base64: ', stateBase64);
-  return stateBase64;
-}
-
-function testSyncedStore() {
-  const doc1 = new Y.Doc();
-  //doc1.getMap('test');
-  const store = syncedStore({ test: {} }, doc1);
-
-  const doc2 = new Y.Doc();
-  doc2.getMap('test').set('a', 1);
-  const state = Y.encodeStateAsUpdate(doc2);
-
-  Y.applyUpdate(doc1, state);
-
-  console.log('doc1: ', doc1.toJSON());
-  console.log('doc2: ', doc2.toJSON());
-  console.log('store: ', store);
-  console.log('store.test.a: ', store.test.a);
-  console.log('store doc: ', getYjsDoc(store).toJSON());
-}
-
-function testSyncedStoreDoc() {
-  const store = syncedStore({ test: {} });
-  const doc1 = getYjsDoc(store);
-
-  const map = doc1.getMap('test');
-  map.set('a', 1);
-
-  console.log('doc1: ', doc1.toJSON());
-  console.log('store: ', store);
-  console.log('store.test.a: ', store.test.a);
 }

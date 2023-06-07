@@ -1,7 +1,7 @@
 import { Observable } from 'lib0/observable';
 import { sendGlobalMessage } from './util';
 
-export class Content extends Observable {
+export class ContentProvider extends Observable {
   constructor(doc, dataAttribute = 'data-yjs') {
     super();
 
@@ -9,11 +9,6 @@ export class Content extends Observable {
     this.dataAttribute = dataAttribute;
 
     this.render();
-
-    this.on('input-change', (update) => {
-      console.log('Content.js: input-change: ', update);
-      sendGlobalMessage('UPDATE', { update });
-    });
 
     this.on('doc-update', (newDoc) => {
       console.log('Content.js: doc-update: ', newDoc);
@@ -32,8 +27,8 @@ export class Content extends Observable {
 
   renderElement(element) {
     element.setAttribute('contentEditable', 'true');
-    const dataAttribute = element.getAttribute(this.dataAttribute);
-    element.textContent = this.valueFor(dataAttribute) || '[empty]';
+    const dataPath = element.getAttribute(this.dataAttribute);
+    element.textContent = this.valueFor(dataPath) || '[empty]';
   }
 
   addInputListener(element) {
@@ -43,12 +38,16 @@ export class Content extends Observable {
 
   handleInputChange(event) {
     const updatedValue = event.target.textContent;
-    const dataAttribute = event.target.getAttribute(this.dataAttribute);
-    this.emit('input-change', [getUpdate(dataAttribute, updatedValue)]);
+    const dataPath = event.target.getAttribute(this.dataAttribute);
+    this.applyUpdate(constructUpdate(dataPath, updatedValue));
+  }
+
+  applyUpdate(update) {
+    sendGlobalMessage('UPDATE', { update });
   }
 
   valueFor(dataAttribute) {
-    const storagePath = dataAttributeToArray(dataAttribute);
+    const storagePath = dataPathToArray(dataAttribute);
     let currentObj = this.doc;
     for (let i = 0; i < storagePath.length; i++) {
       currentObj = currentObj[storagePath[i]];
@@ -63,7 +62,7 @@ export class Content extends Observable {
  * @param {string} str
  * @returns {Array<string|number>}
  */
-function dataAttributeToArray(str) {
+export function dataPathToArray(str) {
   const arr = str.split('-');
   return arr.map((element) => {
     if (!isNaN(element)) {
@@ -74,6 +73,6 @@ function dataAttributeToArray(str) {
   });
 }
 
-function getUpdate(dataAttribute, updatedValue) {
-  return { path: dataAttributeToArray(dataAttribute), value: updatedValue };
+export function constructUpdate(dataPath, updatedValue) {
+  return { path: dataPathToArray(dataPath), value: updatedValue };
 }

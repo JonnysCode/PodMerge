@@ -5,13 +5,10 @@ import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 
-import { getCRDT, showPerson } from '../LD/query.js';
-import { constructRequest } from '../solid/fetch.js';
 import { base64ToBytes, bytesToBase64 } from 'byte-base64';
-import { HtmlProvider } from './HtmlProvider.js';
 import { LDStore } from '../LD/LDStore.js';
 
-export class DataStore {
+export class YjsStore {
   constructor(name, root = 'data') {
     this.name = name;
     this.root = root;
@@ -21,9 +18,23 @@ export class DataStore {
       'https://imp.inrupt.net/local-first/blog/context.ttl'
     );
 
-    this.htmlProvider = null;
     this.webrtcProvider = null;
     this.indexeddbPersistence = null;
+  }
+
+  static fromDocState(name, docState) {
+    const dataStore = new YjsStore(name);
+    Y.applyUpdate(dataStore.rootDoc, base64ToBytes(docState));
+
+    return dataStore;
+  }
+
+  static fromJson(name, json) {
+    const data = new YjsStore(name);
+    const rootMap = data.rootDoc.getMap(data.root);
+    nestedYDocFromJson(json, rootMap);
+
+    return data;
   }
 
   get rootDoc() {
@@ -38,8 +49,12 @@ export class DataStore {
     return this.rootStore[this.root];
   }
 
-  initHtmlProvider() {
-    this.htmlProvider = new HtmlProvider(this.rootStore);
+  get json() {
+    return JSON.stringify(this.doc.toJSON());
+  }
+
+  get state() {
+    return bytesToBase64(Y.encodeStateAsUpdate(this.rootDoc));
   }
 
   initWebrtcProvider() {
@@ -54,66 +69,12 @@ export class DataStore {
       this.rootDoc
     );
   }
-
-  static fromDocState(name, docState) {
-    const dataStore = new DataStore(name);
-    Y.applyUpdate(dataStore.rootDoc, base64ToBytes(docState));
-    console.log('RootDoc: ', dataStore.rootDoc.toJSON());
-    console.log('RootStore title: ', dataStore.rootStore.data.about.title);
-    return dataStore;
-  }
-
-  static fromJson(name, json) {
-    const data = new DataStore(name);
-    const rootMap = data.rootDoc.getMap(data.root);
-    nestedYDocFromJson(json, rootMap);
-
-    console.log('[DataStore] dataStore.doc: ', data.doc.toJSON());
-    console.log('[DataStore] Store Title: ', data.store.about.title);
-    return data;
-  }
-
-  toJSON() {
-    return this.rootDoc.toJSON();
-  }
-
-  getDocState() {
-    return bytesToBase64(Y.encodeStateAsUpdate(this.rootDoc));
-  }
-
-  async fetchStoreState() {
-    const response = await fetch(jsonUrl);
-    const json = await response.json();
-    console.log(json);
-    this.store.content = json;
-  }
-
-  async getCRDT() {
-    const crdt = await getCRDT();
-    console.log(crdt);
-    this.store.content = crdt;
-  }
-
-  async showPerson() {
-    const person = await showPerson();
-    console.log(person);
-    this.store.content = person;
-  }
-
-  async constructRequest() {
-    const request = await constructRequest();
-    console.log(request);
-    this.store.content = request;
-  }
 }
 
 function nestedYDocFromJson(json, parent) {
   const yDoc = parent || new Y.Doc();
 
   const isRoot = yDoc instanceof Y.Doc;
-
-  console.log('Is root: ', isRoot);
-  console.log('json: ', json);
 
   for (const [key, value] of Object.entries(json)) {
     console.log('Entry: ', key, value);

@@ -1,40 +1,29 @@
 'use strict';
 
 import * as Automerge from '@automerge/automerge';
-
-import { constructRequest } from '../solid/fetch.js';
-import { LDStore } from '../LD/LDStore.js';
 import { base64ToBytes, bytesToBase64 } from 'byte-base64';
 
 export class AMStore {
-  constructor(name, root = 'data', doc = null) {
+  constructor(name, doc = null, root = 'data') {
     this.name = name;
     this.root = root;
-
     this.doc = doc || Automerge.init();
   }
 
-  initHtmlProvider() {}
-
-  initWebrtcProvider() {}
-
-  initIndexeddbPersistence() {}
-
   static fromDocState(name, docState) {
     let doc = Automerge.load(base64ToBytes(docState));
-    return new AMStore(name, null, doc);
+    return new AMStore(name, doc);
   }
 
   static fromJson(name, json) {
-    console.log('JSON: ', json);
-    return new AMStore(name, null, Automerge.from(json));
+    return new AMStore(name, Automerge.from(json));
   }
 
-  toJSON() {
-    return this.doc;
+  get json() {
+    return JSON.stringify(this.doc);
   }
 
-  getDocState() {
+  get state() {
     return bytesToBase64(Automerge.save(this.doc));
   }
 

@@ -13,6 +13,7 @@ let amStore = null;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in background file');
+  let response = {};
 
   switch (request.type) {
     case 'LOG':
@@ -26,28 +27,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       console.log('[Background] Base64 state ', stateString);
       break;
     case 'INIT':
-      console.log('[Background] JSON: ', request.payload.json);
-      amStore = AMStore.fromJson('name', request.payload.json);
-      console.log('[Background] DataStore: ', amStore);
-      sendResponse({ payload: amStore.doc });
+      initAmStore(request.payload);
+      response = { payload: amStore.doc };
       break;
     case 'UPDATE':
-      let update = request.payload.update;
-      console.log('[Background] Update: ', update);
-      amStore.applyUpdate(update);
+      amStore.applyUpdate(request.payload.update);
       break;
     case 'STATE':
-      console.log('Sending doc state');
-      sendResponse({ payload: amStore.getDocState() });
+      response = { state: amStore.state, json: amStore.json };
       break;
     case 'GREETINGS':
       const message = `Hi ${
         sender.tab ? 'Con' : 'Pop'
       }, my name is Bac. I am from Background. It's great to hear from you.`;
       console.log(request.payload.message);
-      sendResponse({
+      response = {
         message,
-      });
+      };
       break;
     default:
       console.log(
@@ -57,4 +53,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       );
       break;
   }
+
+  sendResponse(response);
+  return true;
 });
+
+function initAmStore(payload) {
+  if (payload.json) {
+    amStore = AMStore.fromJson(payload.name || 'AutomergeStore', payload.json);
+    console.log('[Background] AmStore from JSON: ', amStore);
+  } else if (payload.state) {
+    amStore = AMStore.fromDocState(
+      payload.name || 'AutomergeStore',
+      payload.state
+    );
+    console.log('[Background] AmStore from state: ', amStore);
+  } else {
+    console.log('[Background] Payload requires a json or state property');
+  }
+}
