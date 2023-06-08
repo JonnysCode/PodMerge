@@ -47,6 +47,22 @@ export class LDStore {
     return await this.invokeOperation(operation, header, document);
   }
 
+  async saveJSON(json) {
+    const operation = await getOperationByType(
+      this.resource.representation,
+      'Update'
+    );
+
+    const header = {
+      'Content-Type': 'application/json',
+    };
+
+    console.log('Header: ', header);
+
+    await logOperation(operation);
+    return await this.invokeOperation(operation, header, json);
+  }
+
   async documentOperations() {
     const operation = await getOperationByType(this.resource.document, 'Read');
     console.log('Read Operation');

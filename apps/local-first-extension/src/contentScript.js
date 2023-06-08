@@ -1,11 +1,5 @@
 'use strict';
 
-import syncedStore, { getYjsDoc } from '@syncedstore/core';
-import * as Y from 'yjs';
-import * as base64 from 'byte-base64';
-
-import { getCRDT } from './LD/query.js';
-import { constructRequest } from './solid/fetch.js';
 import { YjsStore } from './y/YjsStore.js';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
