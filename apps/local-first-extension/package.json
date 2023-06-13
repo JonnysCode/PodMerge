@@ -16,11 +16,12 @@
     "adm-zip": "^0.5.10",
     "concurrently": "^8.0.1",
     "copy-webpack-plugin": "^10.2.4",
-    "css-loader": "^6.7.3",
+    "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "http-server": "^14.1.1",
     "mini-css-extract-plugin": "^2.7.5",
     "prettier": "^2.8.8",
+    "style-loader": "^3.3.3",
     "webpack": "^5.82.0",
     "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.8.0"

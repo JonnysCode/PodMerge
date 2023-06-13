@@ -31,8 +31,8 @@ const common = {
     rules: [
       // Help webpack in understanding CSS files imported in .js files
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
       // Check for images imported in .js files and
       {
@@ -58,10 +58,6 @@ const common = {
           context: 'public',
         },
       ],
-    }),
-    // Extract CSS into separate files
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
     }),
   ],
   experiments: { asyncWebAssembly: true, topLevelAwait: true },

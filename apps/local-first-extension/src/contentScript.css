@@ -1,0 +1,86 @@
+.floating-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  padding: 15px;
+  background-color: #dce6e9;
+  border: 2px solid #bdbfcb;
+  outline: none;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.floating-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.floating-button:hover {
+  opacity: 0.8;
+}
+
+#side-panel {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background-color: #f1f1f1;
+  padding: 20px;
+  transition: left 0.3s;
+}
+
+#side-panel.open {
+  left: 0;
+}
+
+#side-panel .close-button {
+  margin-bottom: 10px;
+}
+
+#side-panel .label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#side-panel .pair {
+  margin-bottom: 10px;
+}
+
+#side-panel .pair:last-child {
+  margin-bottom: 0;
+}
+
+#side-panel input[type='text'] {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+#side-panel .add-button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#side-panel .add-button:hover {
+  background-color: #45a049;
+}
+
+#side-panel .remove-button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#side-panel .remove-button:hover {
+  background-color: #da190b;
+}

@@ -1,11 +1,13 @@
 'use strict';
 
+import './contentScript.css';
 import { YjsStore } from './y/YjsStore.js';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';
 import { ContentProvider } from './ContentProvider.js';
 import { YjsContentProvider } from './y/YjsContentProvider.js';
+import { LinkedDataEditor } from './content/LinkedDataEditor';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -41,6 +43,8 @@ const ldStore = new LDStore(baseUrl + 'context.ttl');
 const framework = await ldStore.getFramework();
 console.log('Framework: ', framework);
 
+const editor = new LinkedDataEditor();
+
 // Listen for message
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   switch (request.type) {
@@ -65,6 +69,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     case 'LOG':
       console.log('Session: ', session);
       console.log('Framework: ', await ldStore.getFramework());
+      await ldStore.log();
       break;
     case 'TEST':
       console.log('Test...');

@@ -1,0 +1,47 @@
+@prefix : <#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<https://imp.inrupt.net/local-first/blog/index.html>
+    a crdt:CollaborativeResource ;
+    crdt:framework crdt:Yjs ;
+    crdt:document [
+        a crdt:YDoc ;
+        crdt:mediaType "application/octet-stream" ;
+        crdt:operation (
+            [
+                a crdt:HttpOperation ;
+                crdt:operationType crdt:Read ;
+                crdt:method "GET" ;
+                crdt:href "https://imp.inrupt.net/local-first/blog/content.bin" ;
+            ]
+            [
+                a crdt:HttpOperation ;
+                crdt:operationType crdt:Update ;
+                crdt:method "PUT" ;
+                crdt:href "https://imp.inrupt.net/local-first/blog/content.bin" ;
+            ] 
+        );
+    ] ;
+    crdt:realTimeConnection [
+        a crdt:YWebRtc ;
+        crdt:dependency "y-webrtc" ;
+        crdt:operation [
+            a crdt:FrameworkOperation ;
+            crdt:operationType crdt:Synchronize ;
+            crdt:requiredInput (
+                [
+                    a crdt:RoomId ;
+                    rdf:value "room-id-bv1823dg"^^xsd:string
+                ]
+                [
+                    a crdt:Password ;
+                    rdf:value "password"^^xsd:string
+                ] 
+            );
+        ] ;
+    ] ;
+    crdt:representation [ a crdt:JsonRepresentation ].

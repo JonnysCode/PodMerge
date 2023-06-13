@@ -12,17 +12,33 @@ export class LDStore {
     this.queryEngine = new ComunicaEngine(entryPath);
     this.path = new PathFactory({ context, queryEngine: this.queryEngine });
 
-    this.resource = this.path.create({
+    this.api = this.path.create({
       subject: namedNode(entryPath + nodeName),
+    });
+
+    this.docState = this.path.create({
+      subject: namedNode(entryPath + '#docState'),
+    });
+
+    this.representation = this.path.create({
+      subject: namedNode(entryPath + '#hrState'),
     });
   }
 
+  async log() {
+    const docState = await this.docState.type.value;
+    const representation = await this.representation.type.value;
+
+    console.log('DocState: ', docState);
+    console.log('Representation: ', representation);
+  }
+
   async getFramework() {
-    return iriName(await this.resource.framework.value);
+    return iriName(await this.docState.framework.value);
   }
 
   async getDocument() {
-    const operation = await getOperationByType(this.resource.document, 'Read');
+    const operation = await getOperationByType(this.api.document, 'Read');
     await logOperation(operation);
     const result = await this.invokeOperation(operation);
 
@@ -30,12 +46,9 @@ export class LDStore {
   }
 
   async saveDocument(document) {
-    const operation = await getOperationByType(
-      this.resource.document,
-      'Update'
-    );
+    const operation = await getOperationByType(this.api.document, 'Update');
 
-    const format = await this.resource.document.format.value;
+    const format = await this.api.document.format.value;
 
     const header = {
       'Content-Type': format,
@@ -49,7 +62,7 @@ export class LDStore {
 
   async saveJSON(json) {
     const operation = await getOperationByType(
-      this.resource.representation,
+      this.api.representation,
       'Update'
     );
 
@@ -64,7 +77,7 @@ export class LDStore {
   }
 
   async documentOperations() {
-    const operation = await getOperationByType(this.resource.document, 'Read');
+    const operation = await getOperationByType(this.api.document, 'Read');
     console.log('Read Operation');
     await logOperation(operation);
   }
