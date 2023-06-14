@@ -23,19 +23,31 @@
   opacity: 0.8;
 }
 
+body {
+  margin-right: 0;
+  transition: margin-right 0.3s ease;
+  overflow: auto;
+}
+
+body.side-panel-open {
+  overflow: hidden;
+  margin-right: 300px;
+  overflow: auto;
+}
+
 #side-panel {
   position: fixed;
   top: 0;
-  left: -300px;
+  right: -300px;
   width: 300px;
   height: 100%;
   background-color: #f1f1f1;
   padding: 20px;
-  transition: left 0.3s;
+  transition: right 0.3s ease;
 }
 
 #side-panel.open {
-  left: 0;
+  right: 0;
 }
 
 #side-panel .close-button {

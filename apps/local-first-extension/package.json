@@ -8,6 +8,7 @@
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
     "build": "webpack --mode=production --config config/webpack.config.js",
     "server": "node ./src/webrtc/server.mjs",
+    "test": "nodemon ./src/test/test.mjs",
     "pack": "node pack.js",
     "repack": "npm run build && npm run pack",
     "format": "prettier --write --ignore-unknown \"{config,public,src}/**/*.{html,css,js,ts,json}\""
@@ -20,6 +21,7 @@
     "file-loader": "^6.2.0",
     "http-server": "^14.1.1",
     "mini-css-extract-plugin": "^2.7.5",
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "style-loader": "^3.3.3",
     "webpack": "^5.82.0",

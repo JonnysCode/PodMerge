@@ -6,7 +6,7 @@ import context from './context.json';
 import { constructRequest } from '../solid/fetch';
 
 export class LDStore {
-  constructor(entryPath, nodeName = '#content') {
+  constructor(entryPath, nodeName = '#API') {
     this.entryPath = entryPath;
     this.nodeName = nodeName;
     this.queryEngine = new ComunicaEngine(entryPath);
@@ -23,6 +23,13 @@ export class LDStore {
     this.representation = this.path.create({
       subject: namedNode(entryPath + '#hrState'),
     });
+  }
+
+  async isCollaborativeResource() {
+    const isDesc =
+      iriName(await this.api.type.value) === 'CollaborativeResourceDesc';
+    console.log('isDesc: ', isDesc);
+    return isDesc;
   }
 
   async log() {

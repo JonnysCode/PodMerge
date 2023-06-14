@@ -7,9 +7,15 @@ class SidePanel {
     this.closeButton = null;
     this.typeInput = null;
     this.pairsList = null;
+    this.floatingButton = null;
   }
 
   create() {
+    this._createButton();
+    this._createPanel();
+  }
+
+  _createPanel() {
     this.panelElement = document.createElement('div');
     this.panelElement.id = 'side-panel';
     document.body.appendChild(this.panelElement);
@@ -40,8 +46,32 @@ class SidePanel {
     });
   }
 
+  _createButton() {
+    this.floatingButton = document.createElement('button');
+    this.floatingButton.classList.add('floating-button');
+
+    const img = document.createElement('img');
+    img.src = chrome.runtime.getURL('images/edit2.png');
+    img.alt = 'Button Icon';
+    this.floatingButton.appendChild(img);
+
+    document.body.appendChild(this.floatingButton);
+
+    this.floatingButton.addEventListener('click', () => {
+      this.toggle();
+    });
+  }
+
   toggle() {
+    const isOpen = this.panelElement.classList.contains('open');
     this.panelElement.classList.toggle('open');
+    this.floatingButton.style.display = isOpen ? 'block' : 'none';
+
+    if (!isOpen) {
+      document.body.classList.add('side-panel-open');
+    } else {
+      document.body.classList.remove('side-panel-open');
+    }
   }
 
   addKeyValuePair() {
@@ -75,20 +105,5 @@ export class LinkedDataEditor {
   constructor() {
     this.sidePanel = new SidePanel();
     this.sidePanel.create();
-
-    this.floatingButton = document.createElement('button');
-    this.floatingButton.classList.add('floating-button');
-
-    const img = document.createElement('img');
-    img.src = chrome.runtime.getURL('images/edit2.png');
-    img.alt = 'Button Icon';
-
-    this.floatingButton.appendChild(img);
-    document.body.appendChild(this.floatingButton);
-
-    this.floatingButton.addEventListener('click', () => {
-      this.sidePanel.toggle();
-      this.floatingButton.style.display = 'none';
-    });
   }
 }
