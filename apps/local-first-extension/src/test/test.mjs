@@ -1,3 +1,5 @@
+import ontologies from './ontologies.json' assert { type: 'json' };
+
 const PRIVATE_CONSTRUCTOR_KEY = Symbol();
 
 export class JsonLD {
@@ -16,7 +18,7 @@ export class JsonLD {
     let jsonld = {
       '@context': {
         '@version': 1.1,
-        crdt: 'https://imp.inrupt.net/ontologies/crdt.ttl#',
+        crdt: ontologies.crdt,
       },
       ...json,
     };
@@ -279,3 +281,4 @@ console.log(proxy.name);
 console.log(proxy.age);
 
 console.log(jsonld.map.number);
+console.log(ontologies.crdt);
