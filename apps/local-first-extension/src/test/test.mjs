@@ -25,7 +25,22 @@ export class JsonLD {
       jsonld['@id'] = url;
     }
 
-    return new JsonLD(jsonld, PRIVATE_CONSTRUCTOR_KEY);
+    return this.#classProxy(new JsonLD(jsonld, PRIVATE_CONSTRUCTOR_KEY));
+  }
+
+  static #classProxy(jsonld) {
+    return new Proxy(jsonld, {
+      get: function (target, prop) {
+        if (
+          target instanceof JsonLD &&
+          prop in target.data &&
+          !(prop in target)
+        ) {
+          return target.data[prop];
+        }
+        return target[prop];
+      },
+    });
   }
 
   #createProxy(value) {
@@ -229,11 +244,17 @@ let ld = {
 export class JsonL {
   constructor(json) {
     this.data = this.createProxy(json);
+    this.age = 12;
+  }
+
+  log() {
+    console.log(this.data);
   }
 
   createProxy(value) {
     return new Proxy(value, {
       get: (target, prop) => {
+        console.log('get', target, prop);
         if (target) return target[prop];
       },
     });
@@ -242,11 +263,7 @@ export class JsonL {
 
 let handler = {
   get: function (target, prop) {
-    console.log('get', target, prop);
-
-    if (target instanceof JsonL) {
-      // Perform actions specific to the JsonLD instance
-      // For example, you can access the `data` property of the JsonLD instance
+    if (target instanceof JsonL && prop in target.data && !(prop in target)) {
       return target.data[prop];
     }
     return target[prop];
@@ -259,3 +276,6 @@ const jsonl = new JsonL(json);
 const proxy = new Proxy(jsonl, handler);
 
 console.log(proxy.name);
+console.log(proxy.age);
+
+console.log(jsonld.map.number);
