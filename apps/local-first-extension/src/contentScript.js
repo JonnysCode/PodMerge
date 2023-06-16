@@ -1,7 +1,7 @@
 'use strict';
 
 import './contentScript.css';
-import { YjsStore } from './y/YjsStore.js';
+import { YjsStore } from './y/YjsStore.mjs';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';

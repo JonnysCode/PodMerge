@@ -1,12 +1,10 @@
 'use strict';
 
-import { syncedStore, getYjsDoc, getYjsValue } from '@syncedstore/core';
+import { syncedStore, getYjsDoc, getYjsValue, Y } from '@syncedstore/core';
 import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
-import * as Y from 'yjs';
 
 import { base64ToBytes, bytesToBase64 } from 'byte-base64';
-import { LDStore } from '../LD/LDStore.js';
 
 export class YjsStore {
   constructor(name, root = 'data') {
@@ -14,9 +12,6 @@ export class YjsStore {
     this.root = root;
     this.rootShape = createObjectWithRoot(root);
     this.rootStore = syncedStore(this.rootShape);
-    this.ldStore = new LDStore(
-      'https://imp.inrupt.net/local-first/blog/context.ttl'
-    );
 
     this.webrtcProvider = null;
     this.indexeddbPersistence = null;
@@ -30,7 +25,7 @@ export class YjsStore {
   }
 
   static fromJson(name, json) {
-    const data = new YjsStore(name);
+    const data = new YjsStore(name, 'jsonld');
     const rootMap = data.rootDoc.getMap(data.root);
     nestedYDocFromJson(json, rootMap);
 
