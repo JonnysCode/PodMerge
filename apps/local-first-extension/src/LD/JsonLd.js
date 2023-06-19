@@ -1,6 +1,5 @@
 import ontologies from './ontologies.json' assert { type: 'json' };
-import { YjsStore } from '../y/YjsStore.mjs';
-import { SyncedMap, getYjsValue, Y } from '@syncedstore/core';
+import { SyncedMap, getYjsValue } from '@syncedstore/core';
 
 const PRIVATE_CONSTRUCTOR_KEY = Symbol();
 
@@ -124,38 +123,16 @@ export class JsonLD {
       target = target[prop];
     }
 
-    console.log('expand', target, prop);
-
     let value = prop ? target[prop] : { ...target };
     if (!value.isExpanded()) {
       // TODO: Make it a SyncedMap
       if (prop) {
-        console.log('expand', target, prop, value, target[prop]);
-        const yTarget = getYjsValue(target);
-        console.log(yTarget instanceof SyncedMap);
-        const ymapNested = new Y.Map();
-        yTarget.delete(prop);
-        //yTarget.set(prop, ymapNested);
-        //ymapNested.set('@value', value);
-
-        //console.log(yTarget.toJSON());
-
-        console.log('expand', target, prop, value, target[prop]);
-        console.log(target instanceof SyncedMap);
-        console.log(target instanceof Object);
-        console.log(getYjsValue(target) instanceof Y.Map);
-        target[prop] = new SyncedMap();
-        console.log('expand', target, prop, value, target[prop]);
-        target[prop]['@value'] = value;
+        target[prop] = { '@value': value };
       } else {
         Object.keys(target).forEach((key) => delete target[key]);
         target['@value'] = value;
       }
     }
-  }
-
-  newMap() {
-    return new SyncedMap();
   }
 
   isExpanded(property) {
@@ -186,8 +163,6 @@ export class JsonLD {
         'Cannot add a keyword to a primitive without a propertyName'
       );
     }
-
-    console.log('addLdKeyword', target, keyword, iri, prop);
 
     if (!this.isRoot(target, prop)) {
       this.expand(target, prop);
@@ -274,95 +249,3 @@ export class JsonLD {
     return target === this.data && !prop;
   }
 }
-
-Object.defineProperty(Object.prototype, 'expand', {
-  value: function (propertyName = null) {
-    jsonld.expand(this, propertyName);
-  },
-  enumerable: false,
-});
-
-Object.defineProperty(Object.prototype, 'addType', {
-  value: function (type, propertyName = null) {
-    jsonld.addType(this, type, propertyName);
-  },
-  enumerable: false,
-});
-
-Object.defineProperty(Object.prototype, 'isExpanded', {
-  value: function () {
-    return jsonld.isExpanded(this);
-  },
-  enumerable: false,
-});
-
-let data = {
-  headline: 'World of Coffee',
-  body: 'This blog post explores the rich history of coffee, its various types and flavors, and different brewing methods to create the perfect cup of coffee.',
-  list: ['item1', 'item2', 'item3', 'item4'],
-  map: {
-    number: 12,
-    val: 'value',
-  },
-};
-
-//let jsonld = JsonLD.fromJson(data, 'https://example.com/blog-post-1');
-
-let yjs = YjsStore.fromJson('yjs-store', data);
-
-let context = {
-  '@version': 1.1,
-  crdt: ontologies.crdt,
-};
-
-yjs.store['@context'] = new SyncedMap();
-yjs.store['@context'] = context;
-
-console.log(yjs.rootDoc.toJSON());
-console.log(yjs.store.body);
-console.log('---------------------');
-
-let jsonld = JsonLD.fromYStore(yjs.store, 'https://example.com/blog-post-1');
-
-//jsonld.data.map.number.expand();
-//jsonld.data.map.number.addType('crdt:Counter');
-
-//console.log(jsonld.data.map);
-
-//jsonld.expand(jsonld.data.map);
-console.log('---------------------');
-jsonld.addTypeFromPath('map.number', 'crdt:Counter');
-console.log('---------------------');
-console.log(jsonld.data.map);
-console.log(jsonld.data.map.number);
-console.log(jsonld.map.number.value);
-console.log(jsonld.map.number.type);
-
-jsonld.data.map.number.value = 13;
-console.log(jsonld.data.map.number.value);
-
-jsonld.addType(jsonld.data, 'crdt:Text', 'body');
-console.log(jsonld.body.value);
-console.log(jsonld.body.type);
-console.log('---------------------');
-console.log(jsonld.data['@context'].crdt);
-
-console.log('---------------------');
-console.log('crdt' in jsonld.data['@context']);
-
-//console.log(jsonld.data.map.number);
-
-//jsonld.data.map.addType('crdt:Counter', 'number');
-
-//console.log(jsonld.data.map.number);
-
-console.log(yjs.rootDoc.toJSON());
-console.log('---------------------');
-
-const doc = new Y.Doc();
-
-const text = doc.getText('text');
-
-text.insert(0, 'Hello world!');
-
-console.log(doc.toJSON());

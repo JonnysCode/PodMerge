@@ -71,26 +71,22 @@ function nestedYDocFromJson(json, parent) {
 
   const isRoot = yDoc instanceof Y.Doc;
 
+  // if the object contains an @type property, then it is a JsonLD object
+  if (hasCrdtType(json)) {
+    const type = getCrdtType(json);
+    if (type === 'Map') {
+      const yMap = new Y.Map();
+      yDoc.set('jsonld', yMap);
+      nestedYDocFromJson(json, yMap);
+    }
+  }
+
   for (const [key, value] of Object.entries(json)) {
     console.log('Entry: ', key, value);
     if (Array.isArray(value)) {
-      let yArray = null;
-      if (isRoot) {
-        yArray = yDoc.getArray(key);
-      } else {
-        yArray = new Y.Array();
-        yDoc.set(key, yArray);
-      }
-      nestedYArray(value, yArray);
+      addArrayEntry(key, value, yDoc, isRoot);
     } else if (typeof value === 'object') {
-      let yjsMap = null;
-      if (isRoot) {
-        yjsMap = yDoc.getMap(key);
-      } else {
-        yjsMap = new Y.Map();
-        yDoc.set(key, yjsMap);
-      }
-      nestedYDocFromJson(value, yjsMap);
+      addMapEntry(key, value, yDoc, isRoot);
     } else {
       if (isRoot) {
         throw new Error('Y.Doc value cannot be a primitive');
@@ -100,6 +96,39 @@ function nestedYDocFromJson(json, parent) {
   }
 
   return yDoc;
+}
+
+function addMapEntry(key, value, doc, isRoot = false) {
+  let map = null;
+  if (isRoot) {
+    map = doc.getMap(key);
+  } else {
+    map = new Y.Map();
+    doc.set(key, map);
+  }
+  nestedYDocFromJson(value, map);
+}
+
+function addArrayEntry(key, value, doc, isRoot = false) {
+  let array = null;
+  if (isRoot) {
+    array = doc.getArray(key);
+  } else {
+    array = new Y.Array();
+    doc.set(key, array);
+  }
+  nestedYArray(value, array);
+}
+
+function addYTextEntry(key, value, doc, isRoot = false) {
+  let text = null;
+  if (isRoot) {
+    text = doc.getText(key);
+  } else {
+    text = new Y.Text();
+    doc.set(key, text);
+  }
+  text.insert(0, value);
 }
 
 function nestedYArray(array, parent) {
@@ -120,6 +149,26 @@ function nestedYArray(array, parent) {
   });
 
   return yArray;
+}
+
+function hasCrdtType(obj) {
+  return (
+    obj.hasOwnProperty('@type') && compactIriPrefix(obj['@type']) === 'crdt'
+  );
+}
+
+function getCrdtType(obj) {
+  return compactIriSuffix(obj['@type']);
+}
+
+function compactIriPrefix(iri) {
+  const parts = iri.split(':');
+  return parts[0];
+}
+
+function compactIriSuffix(iri) {
+  const parts = iri.split(':');
+  return parts[1];
 }
 
 function createObjectWithRoot(root) {

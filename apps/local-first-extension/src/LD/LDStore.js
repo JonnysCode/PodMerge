@@ -45,7 +45,7 @@ export class LDStore {
   }
 
   async getDocument() {
-    const operation = await getOperationByType(this.api.document, 'Read');
+    const operation = await getOperationByType(this.docState, 'Read');
     await logOperation(operation);
     const result = await this.invokeOperation(operation);
 
@@ -53,9 +53,9 @@ export class LDStore {
   }
 
   async saveDocument(document) {
-    const operation = await getOperationByType(this.api.document, 'Update');
+    const operation = await getOperationByType(this.docState, 'Update');
 
-    const format = await this.api.document.format.value;
+    const format = await this.docState.format.value;
 
     const header = {
       'Content-Type': format,
@@ -81,12 +81,6 @@ export class LDStore {
 
     await logOperation(operation);
     return await this.invokeOperation(operation, header, json);
-  }
-
-  async documentOperations() {
-    const operation = await getOperationByType(this.api.document, 'Read');
-    console.log('Read Operation');
-    await logOperation(operation);
   }
 
   async invokeOperation(operation, header, body) {
@@ -147,7 +141,7 @@ function iriName(namedNodeIRI) {
 }
 
 async function getOperations(thing) {
-  return await thing.operation.list();
+  return await thing.operations.list();
 }
 
 async function getOperationByType(thing, operationType) {

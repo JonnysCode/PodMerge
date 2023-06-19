@@ -6,8 +6,10 @@ class SidePanel {
     this.addButton = null;
     this.closeButton = null;
     this.typeInput = null;
+    this.typeLabel = null;
     this.pairsList = null;
     this.floatingButton = null;
+    this.titleElement = null;
   }
 
   create() {
@@ -25,16 +27,27 @@ class SidePanel {
     this.closeButton.textContent = 'Close';
     this.panelElement.appendChild(this.closeButton);
 
+    this.titleElement = document.createElement('h2');
+    this.titleElement.className = 'panel-title';
+    this.titleElement.textContent = 'Element Name';
+    this.panelElement.appendChild(this.titleElement);
+
     this.typeInput = document.createElement('input');
     this.typeInput.type = 'text';
-    this.panelElement.appendChild(this.typeInput);
+
+    this.typeLabel = document.createElement('label');
+    this.typeLabel.className = 'label';
+    this.typeLabel.textContent = '@Type ';
+    this.typeLabel.appendChild(this.typeInput);
+
+    this.panelElement.appendChild(this.typeLabel);
 
     this.pairsList = document.createElement('ul');
     this.panelElement.appendChild(this.pairsList);
 
     this.addButton = document.createElement('button');
     this.addButton.className = 'add-button';
-    this.addButton.textContent = 'Add Pair';
+    this.addButton.textContent = 'Add Annotation';
     this.panelElement.appendChild(this.addButton);
 
     this.closeButton.addEventListener('click', () => {
@@ -60,6 +73,10 @@ class SidePanel {
     this.floatingButton.addEventListener('click', () => {
       this.toggle();
     });
+  }
+
+  setTitle(title) {
+    this.titleElement.textContent = title;
   }
 
   toggle() {
