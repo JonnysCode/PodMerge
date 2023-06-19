@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@base": "https://imp.inrupt.net/local-first/blog/",
+    "crdt": "https://imp.inrupt.net/ontologies/crdt.ttl#",
+    "schema": "http://schema.org/",
+    "headline": "schema:headline"
+  },
+  "@id": "content.jsonld",
+  "@type": [
+    "BlogPosting",
+    "crdt:JsonLdRepresentation"
+  ],
+  "headline": "World of Coffee",
+  "articleBody": {
+    "@value": "This blog post explores the rich history of coffee, its various types and flavors, and different brewing methods to create the perfect cup of coffee.",
+    "@type": "crdt:Text"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Jonathan Gruss"
+  }
+}

@@ -129,6 +129,7 @@
     "document": "crdt:document",
     "format": "crdt:format",
     "operation": "crdt:operation",
+    "operations": "crdt:operations",
     "operationType": "crdt:operationType",
     "method": "crdt:method",
     "href": "crdt:href",
