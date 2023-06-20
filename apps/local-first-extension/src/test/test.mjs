@@ -1,6 +1,6 @@
 import ontologies from './ontologies.json' assert { type: 'json' };
 import { YjsStore } from '../y/YjsStore.mjs';
-import { SyncedMap, getYjsValue, Y } from '@syncedstore/core';
+import { SyncedMap, getYjsValue, Y, getYjsDoc } from '@syncedstore/core';
 
 const PRIVATE_CONSTRUCTOR_KEY = Symbol();
 
@@ -67,7 +67,10 @@ export class JsonLD {
     if (typeof value === 'object' && value !== null) {
       return new Proxy(value, {
         get: (target, prop) => {
-          if (target[prop] === undefined) {
+          if (
+            target[prop] === undefined &&
+            target['@' + String(prop)] !== undefined
+          ) {
             prop = '@' + String(prop);
           }
 
@@ -80,6 +83,13 @@ export class JsonLD {
           if (typeof newValue === 'object' && newValue !== null) {
             newValue = this.#createProxy(newValue);
           }
+          if (
+            target[prop] === undefined &&
+            target['@' + String(prop)] !== undefined
+          ) {
+            prop = '@' + String(prop);
+          }
+
           target[prop] = newValue;
           return true;
         },
@@ -115,51 +125,43 @@ export class JsonLD {
     return { target, prop };
   }
 
+  /**
+   * Example:
+   *    target, prop: { number: 12, val: 'foo' }, null -> { '@value': { number: 12, val: 'foo' }}
+   *    target, prop: { number: 12, val: 'foo' }, 'number' -> { number: { '@value': 12 }, val: 'foo' }
+   *
+   * @param {*} target
+   * @param {*} prop
+   */
   expand(target, prop = null) {
     if (!prop && typeof target !== 'object') {
       throw new Error('Cannot expand a primitive without a propertyName');
     }
 
-    if (typeof target[prop] === 'object') {
-      target = target[prop];
+    let newValue = null;
+    if (prop) {
+      newValue =
+        typeof target[prop] === 'object' ? { ...target[prop] } : target[prop];
+    } else {
+      newValue = typeof target === 'object' ? { ...target.clone() } : target;
     }
 
-    console.log('expand', target, prop);
-
-    let value = prop ? target[prop] : { ...target };
-    if (!value.isExpanded()) {
-      // TODO: Make it a SyncedMap
+    if (!this.isExpanded(newValue)) {
       if (prop) {
-        console.log('expand', target, prop, value, target[prop]);
-        const yTarget = getYjsValue(target);
-        console.log(yTarget instanceof SyncedMap);
-        const ymapNested = new Y.Map();
-        yTarget.delete(prop);
-        //yTarget.set(prop, ymapNested);
-        //ymapNested.set('@value', value);
-
-        //console.log(yTarget.toJSON());
-
-        console.log('expand', target, prop, value, target[prop]);
-        console.log(target instanceof SyncedMap);
-        console.log(target instanceof Object);
-        console.log(getYjsValue(target) instanceof Y.Map);
-        target[prop] = new SyncedMap();
-        console.log('expand', target, prop, value, target[prop]);
-        target[prop]['@value'] = value;
+        target[prop] = { '@value': newValue };
       } else {
         Object.keys(target).forEach((key) => delete target[key]);
-        target['@value'] = value;
+        target['@value'] = newValue;
       }
     }
   }
 
-  newMap() {
-    return new SyncedMap();
-  }
-
   isExpanded(property) {
-    return property['@value'] !== undefined;
+    if (typeof property !== 'object') {
+      return false;
+    }
+    const keysToCheck = ['@value', '@id', '@type'];
+    return keysToCheck.some((key) => Object.hasOwn(property, key));
   }
 
   addType(target, type, prop = null) {
@@ -331,15 +333,16 @@ let jsonld = JsonLD.fromYStore(yjs.store, 'https://example.com/blog-post-1');
 
 //jsonld.expand(jsonld.data.map);
 console.log('---------------------');
-jsonld.addTypeFromPath('map.number', 'crdt:Counter');
+jsonld.addTypeFromPath('map', 'crdt:Map');
+jsonld.addTypeFromPath('map.value.number', 'crdt:Counter');
 console.log('---------------------');
 console.log(jsonld.data.map);
 console.log(jsonld.data.map.number);
-console.log(jsonld.map.number.value);
-console.log(jsonld.map.number.type);
+console.log(jsonld.map.value.number.value);
+console.log(jsonld.map.value.number.type);
 
-jsonld.data.map.number.value = 13;
-console.log(jsonld.data.map.number.value);
+jsonld.data.map.value.number.value = 13;
+console.log(jsonld.data.map.value.number.value);
 
 jsonld.addType(jsonld.data, 'crdt:Text', 'body');
 console.log(jsonld.body.value);
@@ -366,3 +369,13 @@ const text = doc.getText('text');
 text.insert(0, 'Hello world!');
 
 console.log(doc.toJSON());
+
+console.log('---------------------');
+const store = yjs.store;
+
+const num = yjs.rootStore.jsonld.map['@value'].number;
+
+console.log(getYjsValue(num) instanceof Y.Map);
+
+console.log(getYjsValue(store).toJSON());
+console.log(getYjsValue(yjs.rootStore.jsonld.map).toJSON());

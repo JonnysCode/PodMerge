@@ -66,7 +66,10 @@ export class JsonLD {
     if (typeof value === 'object' && value !== null) {
       return new Proxy(value, {
         get: (target, prop) => {
-          if (target[prop] === undefined) {
+          if (
+            target[prop] === undefined &&
+            target['@' + String(prop)] !== undefined
+          ) {
             prop = '@' + String(prop);
           }
 
@@ -79,6 +82,13 @@ export class JsonLD {
           if (typeof newValue === 'object' && newValue !== null) {
             newValue = this.#createProxy(newValue);
           }
+          if (
+            target[prop] === undefined &&
+            target['@' + String(prop)] !== undefined
+          ) {
+            prop = '@' + String(prop);
+          }
+
           target[prop] = newValue;
           return true;
         },
@@ -114,29 +124,43 @@ export class JsonLD {
     return { target, prop };
   }
 
+  /**
+   * Example:
+   *    target, prop: { number: 12, val: 'foo' }, null -> { '@value': { number: 12, val: 'foo' }}
+   *    target, prop: { number: 12, val: 'foo' }, 'number' -> { number: { '@value': 12 }, val: 'foo' }
+   *
+   * @param {*} target
+   * @param {*} prop
+   */
   expand(target, prop = null) {
     if (!prop && typeof target !== 'object') {
       throw new Error('Cannot expand a primitive without a propertyName');
     }
 
-    if (typeof target[prop] === 'object') {
-      target = target[prop];
+    let newValue = null;
+    if (prop) {
+      newValue =
+        typeof target[prop] === 'object' ? { ...target[prop] } : target[prop];
+    } else {
+      newValue = typeof target === 'object' ? { ...target.clone() } : target;
     }
 
-    let value = prop ? target[prop] : { ...target };
-    if (!value.isExpanded()) {
-      // TODO: Make it a SyncedMap
+    if (!this.isExpanded(newValue)) {
       if (prop) {
-        target[prop] = { '@value': value };
+        target[prop] = { '@value': newValue };
       } else {
         Object.keys(target).forEach((key) => delete target[key]);
-        target['@value'] = value;
+        target['@value'] = newValue;
       }
     }
   }
 
   isExpanded(property) {
-    return property['@value'] !== undefined;
+    if (typeof property !== 'object') {
+      return false;
+    }
+    const keysToCheck = ['@value', '@id', '@type'];
+    return keysToCheck.some((key) => Object.hasOwn(property, key));
   }
 
   addType(target, type, prop = null) {
