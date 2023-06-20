@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "crdt": "https://imp.inrupt.net/ontologies/crdt.ttl#"
+  },
+  "headline": "World of Coffee",
+  "body": "This blog post explores the rich history of coffee, its various types and flavors, and different brewing methods to create the perfect cup of coffee.",
+  "list": [
+    "item1",
+    "item2",
+    "item3",
+    "item4"
+  ],
+  "map": {
+    "@value": {
+      "number": {
+        "@value": 13,
+        "@type": "crdt:Counter"
+      },
+      "val": "value"
+    },
+    "@type": "crdt:Map"
+  },
+  "@id": "https://example.com/blog-post-1"
+}

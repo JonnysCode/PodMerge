@@ -1,16 +1,17 @@
 import ontologies from './ontologies.json' assert { type: 'json' };
 import { SyncedMap, getYjsValue } from '@syncedstore/core';
 
-const PRIVATE_CONSTRUCTOR_KEY = Symbol();
+export const CONSTRUCTOR_KEY = Symbol();
 
 export class JsonLD {
-  constructor(jsonld, constructorKey) {
-    if (constructorKey !== PRIVATE_CONSTRUCTOR_KEY) {
+  constructor(jsonld, constructorKey, rootProperty = null) {
+    if (constructorKey !== CONSTRUCTOR_KEY) {
       throw new Error(
         'You must use the JsonLD factory methods (fromJson(), ...) to construct an instance.'
       );
     }
 
+    this.rootProperty = rootProperty;
     this.data = this.#createProxy(jsonld);
   }
 
@@ -28,26 +29,24 @@ export class JsonLD {
       jsonld['@id'] = url;
     }
 
-    return this.#classProxy(new JsonLD(jsonld, PRIVATE_CONSTRUCTOR_KEY));
+    return this.classProxy(new JsonLD(jsonld, CONSTRUCTOR_KEY));
   }
 
-  static fromYStore(store, url = null) {
-    let context = {
-      '@version': 1.1,
-      crdt: ontologies.crdt,
-    };
-
-    store['@context'] = new SyncedMap();
-    store['@context'] = context;
-
-    if (url) {
-      store['@id'] = url;
+  static classProxy(jsonld) {
+    if (jsonld.rootProperty) {
+      return new Proxy(jsonld, {
+        get: function (target, prop) {
+          if (
+            target instanceof JsonLD &&
+            prop in target.data[jsonld.rootProperty] &&
+            !(prop in target)
+          ) {
+            return target.data[jsonld.rootProperty][prop];
+          }
+          return target[prop];
+        },
+      });
     }
-
-    return this.#classProxy(new JsonLD(store, PRIVATE_CONSTRUCTOR_KEY));
-  }
-
-  static #classProxy(jsonld) {
     return new Proxy(jsonld, {
       get: function (target, prop) {
         if (
@@ -96,6 +95,10 @@ export class JsonLD {
     }
   }
 
+  get root() {
+    return this.rootProperty ? this.data[this.rootProperty] : this.data;
+  }
+
   /**Returns the target and property of a given path in the data.
    * If the path is a string, it will be split by '.'.
    *
@@ -114,13 +117,18 @@ export class JsonLD {
       path = path.split('.');
     }
 
-    let target = this.data;
+    let target = this.root;
     let prop = path[0];
 
     for (let i = 1; i < path.length; i++) {
+      console.log('[getTargetAndProp] i target, prop', i, target, prop);
       target = target[prop];
       prop = path[i];
     }
+
+    console.log('[getTargetAndProp] target, prop', target, prop);
+    console.log('[getTargetAndProp] target === this', target === this.root);
+
     return { target, prop };
   }
 
@@ -142,8 +150,16 @@ export class JsonLD {
       newValue =
         typeof target[prop] === 'object' ? { ...target[prop] } : target[prop];
     } else {
-      newValue = typeof target === 'object' ? { ...target.clone() } : target;
+      newValue = typeof target === 'object' ? { ...target } : target;
     }
+
+    console.log(
+      '[expand] target, prop, target[prop]',
+      target,
+      prop,
+      target[prop]
+    );
+    console.log('[expand] newValue', newValue);
 
     if (!this.isExpanded(newValue)) {
       if (prop) {
@@ -231,11 +247,11 @@ export class JsonLD {
 
   addContext(key, value) {
     // TODO: If the value is an object, create SyncedMap
-    this.data['@context'][key] = value;
+    this.root['@context'][key] = value;
   }
 
   prefixInContext(prefix) {
-    return prefix in this.data['@context'];
+    return prefix in this.root['@context'];
   }
 
   addProperty(target, prop, property, value) {
@@ -270,6 +286,10 @@ export class JsonLD {
   }
 
   isRoot(target, prop = null) {
-    return target === this.data && !prop;
+    return target === this.root && !prop;
+  }
+
+  toJsonLd() {
+    return JSON.stringify(this.root);
   }
 }
