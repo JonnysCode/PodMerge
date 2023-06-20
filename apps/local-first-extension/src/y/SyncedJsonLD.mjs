@@ -7,7 +7,7 @@ import { JsonLD, CONSTRUCTOR_KEY } from '../LD/JsonLd.mjs';
 import ontologies from '../LD/ontologies.json' assert { type: 'json' };
 import { nestedYDocFromJson } from './util.mjs';
 
-export class YjsJsonLD extends JsonLD {
+export class SyncedJsonLD extends JsonLD {
   /**
    *
    * @param {*} store
@@ -17,41 +17,34 @@ export class YjsJsonLD extends JsonLD {
    *                         for a root property.
    */
   constructor(store, CONSTRUCTOR_KEY, rootProperty = null) {
-    super(store, CONSTRUCTOR_KEY);
-    this.rootProperty = rootProperty;
+    super(store, CONSTRUCTOR_KEY, rootProperty);
   }
 
   static fromJson(json, url = null, rootProperty = 'jsonld') {
-    // Add @context to json
-    let jsonld = {
-      '@context': {
-        '@version': 1.1,
-        crdt: ontologies.crdt,
-      },
-      ...json,
-    };
+    let jsonld = addContext(json, url);
+    let store = syncedStoreWithRoot(rootProperty);
 
-    if (url) {
-      jsonld['@id'] = url;
-    }
-
-    // Create an empty syncedStore with a root property to store the JSON-LD
-    let rootShape = {};
-    rootShape[rootProperty] = {};
-    let store = syncedStore(rootShape);
+    console.log(
+      '[SyncedJsonLD]',
+      store,
+      store.jsonld,
+      getYjsDoc(store).toJSON()
+    );
 
     // Convert JSON-LD to Yjs and store it in the root property
     const rootMap = getYjsDoc(store).getMap(rootProperty);
     nestedYDocFromJson(jsonld, rootMap);
 
-    console.log('store', getYjsDoc(store).toJSON());
+    console.log(
+      '[SyncedJsonLD]',
+      store,
+      store.jsonld,
+      getYjsDoc(store).toJSON()
+    );
 
-    const yjsJsonLD = new YjsJsonLD(store, CONSTRUCTOR_KEY, rootProperty);
-
-    console.log('yjsJsonLD', yjsJsonLD);
-    console.log('yjsJsonLD data root', yjsJsonLD.data[rootProperty]);
-
-    return this.classProxy(yjsJsonLD);
+    return this.classProxy(
+      new SyncedJsonLD(store, CONSTRUCTOR_KEY, rootProperty)
+    );
   }
 
   static fromYStore(store, url = null, rootProperty = 'jsonld') {
@@ -67,7 +60,9 @@ export class YjsJsonLD extends JsonLD {
       store['@id'] = url;
     }
 
-    return this.classProxy(new YjsJsonLD(store, CONSTRUCTOR_KEY, rootProperty));
+    return this.classProxy(
+      new SyncedJsonLD(store, CONSTRUCTOR_KEY, rootProperty)
+    );
   }
 
   get doc() {
@@ -77,4 +72,33 @@ export class YjsJsonLD extends JsonLD {
   get rootMap() {
     return getYjsValue(this.data[this.rootProperty]);
   }
+
+  get store() {
+    return this.data;
+  }
+}
+
+function addContext(json, url = null) {
+  let jsonld = {
+    '@context': {
+      '@version': 1.1,
+      crdt: ontologies.crdt,
+    },
+    ...json,
+  };
+
+  if (url) {
+    jsonld['@id'] = url;
+  }
+
+  return jsonld;
+}
+
+function syncedStoreWithRoot(rootProperty = 'jsonld') {
+  let rootShape = {};
+  rootShape[rootProperty] = {};
+
+  console.log('[SyncedJsonLD] shape', rootShape);
+
+  return syncedStore(rootShape);
 }

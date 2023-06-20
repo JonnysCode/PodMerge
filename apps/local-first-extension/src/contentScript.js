@@ -8,6 +8,7 @@ import { sendGlobalMessage } from './util.js';
 import { ContentProvider } from './ContentProvider.js';
 import { YjsContentProvider } from './y/YjsContentProvider.js';
 import { LinkedDataEditor } from './content/LinkedDataEditor';
+import { SyncedJsonLD } from './y/SyncedJsonLD.mjs';
 
 const currentPageUrl = window.location.href;
 const baseUrl = currentPageUrl.substring(
@@ -18,6 +19,7 @@ const jsonUrl = baseUrl + 'content.json';
 console.log(`JSON data URL is: '${jsonUrl}'`);
 
 let store = null;
+let data = null;
 let session = getSession();
 let contentProvider = null;
 
@@ -92,8 +94,14 @@ async function initFromJson() {
   let json = await getJSON(jsonUrl);
 
   if (framework === 'Yjs') {
-    store = YjsStore.fromJson(baseUrl, json);
-    contentProvider = new YjsContentProvider(store.rootStore);
+    //store = YjsStore.fromJson(baseUrl, json);
+    data = SyncedJsonLD.fromJson(json, jsonUrl);
+    console.log('Data: ', data.toJsonLd());
+    contentProvider = new YjsContentProvider(
+      data.store,
+      'data-yjs',
+      data.rootProperty
+    );
   } else if (framework === 'Automerge') {
     const response = await sendGlobalMessage('INIT', {
       name: baseUrl,

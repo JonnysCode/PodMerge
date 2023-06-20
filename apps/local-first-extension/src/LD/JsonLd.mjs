@@ -4,7 +4,14 @@ import { SyncedMap, getYjsValue } from '@syncedstore/core';
 export const CONSTRUCTOR_KEY = Symbol();
 
 export class JsonLD {
-  constructor(jsonld, constructorKey, rootProperty = null) {
+  /**
+   *
+   * @param {Object} jsonld
+   * @param {Symbol} constructorKey
+   * @param {string || null} rootProperty
+   * @param {boolean} useProxy Allows to call "['@keyword']" directly using dot notation ".keyword"
+   */
+  constructor(jsonld, constructorKey, rootProperty = null, useProxy = false) {
     if (constructorKey !== CONSTRUCTOR_KEY) {
       throw new Error(
         'You must use the JsonLD factory methods (fromJson(), ...) to construct an instance.'
@@ -12,7 +19,10 @@ export class JsonLD {
     }
 
     this.rootProperty = rootProperty;
-    this.data = this.#createProxy(jsonld);
+    this.data = jsonld;
+    if (useProxy) {
+      this.#dataProxies();
+    }
   }
 
   static fromJson(json, url = null) {
@@ -61,18 +71,26 @@ export class JsonLD {
     });
   }
 
+  #dataProxies() {
+    Object.keys(this.root).forEach((key) => {
+      if (typeof this.root[key] === 'object' && this.root[key] !== null) {
+        this.root[key] = this.#createProxy(this.root[key]);
+      }
+    });
+  }
+
   #createProxy(value) {
     if (typeof value === 'object' && value !== null) {
       return new Proxy(value, {
         get: (target, prop) => {
           if (
-            target[prop] === undefined &&
-            target['@' + String(prop)] !== undefined
+            !Object.hasOwn(target, prop) &&
+            Object.hasOwn(target, '@' + String(prop))
           ) {
             prop = '@' + String(prop);
           }
-
           const property = target[prop];
+
           return typeof property === 'object' && property !== null
             ? this.#createProxy(property)
             : property;
@@ -82,8 +100,8 @@ export class JsonLD {
             newValue = this.#createProxy(newValue);
           }
           if (
-            target[prop] === undefined &&
-            target['@' + String(prop)] !== undefined
+            !Object.hasOwn(target, prop) &&
+            Object.hasOwn(target, '@' + String(prop))
           ) {
             prop = '@' + String(prop);
           }
@@ -119,15 +137,10 @@ export class JsonLD {
 
     let target = this.root;
     let prop = path[0];
-
     for (let i = 1; i < path.length; i++) {
-      console.log('[getTargetAndProp] i target, prop', i, target, prop);
       target = target[prop];
       prop = path[i];
     }
-
-    console.log('[getTargetAndProp] target, prop', target, prop);
-    console.log('[getTargetAndProp] target === this', target === this.root);
 
     return { target, prop };
   }
@@ -145,28 +158,21 @@ export class JsonLD {
       throw new Error('Cannot expand a primitive without a propertyName');
     }
 
-    let newValue = null;
+    // If the property is an object we have to clone it
+    let property = null;
     if (prop) {
-      newValue =
+      property =
         typeof target[prop] === 'object' ? { ...target[prop] } : target[prop];
     } else {
-      newValue = typeof target === 'object' ? { ...target } : target;
+      property = typeof target === 'object' ? { ...target } : target;
     }
 
-    console.log(
-      '[expand] target, prop, target[prop]',
-      target,
-      prop,
-      target[prop]
-    );
-    console.log('[expand] newValue', newValue);
-
-    if (!this.isExpanded(newValue)) {
+    if (!this.isExpanded(property)) {
       if (prop) {
-        target[prop] = { '@value': newValue };
+        target[prop] = { '@value': property };
       } else {
         Object.keys(target).forEach((key) => delete target[key]);
-        target['@value'] = newValue;
+        target['@value'] = property;
       }
     }
   }
@@ -204,7 +210,8 @@ export class JsonLD {
       );
     }
 
-    if (!this.isRoot(target, prop)) {
+    // Only expand when it is not an object! Otherwise @keyword can be added directly
+    if (typeof target[prop] !== 'object' && !this.isRoot(target, prop)) {
       this.expand(target, prop);
     }
 
@@ -291,5 +298,11 @@ export class JsonLD {
 
   toJsonLd() {
     return JSON.stringify(this.root);
+  }
+
+  static log(target) {
+    console.log(
+      typeof target === 'object' ? getYjsValue(target).toJSON() : target
+    );
   }
 }

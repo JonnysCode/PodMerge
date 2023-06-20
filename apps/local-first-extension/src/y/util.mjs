@@ -16,7 +16,7 @@ export function nestedYDocFromJson(json, parent) {
   }
 
   for (const [key, value] of Object.entries(json)) {
-    console.log('Entry: ', key, value);
+    //console.log('Entry: ', key, value);
     if (Array.isArray(value)) {
       addArrayEntry(key, value, yDoc, isRoot);
     } else if (typeof value === 'object') {
