@@ -1,0 +1,394 @@
+@prefix : <https://imp.inrupt.net/ontologies/crdt.ttl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#> .
+@prefix http: <http://www.w3.org/2011/http#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <https://imp.inrupt.net/ontologies/crdt.ttl#> .
+
+<https://imp.inrupt.net/ontologies/crdt.ttl> rdf:type owl:Ontology ;
+                                              rdfs:label "CollaborativeResourceOntology" .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#collaborationMechanism
+crdt:collaborationMechanism rdf:type owl:ObjectProperty ;
+                            rdfs:domain crdt:CollaborativeResourceDesc ;
+                            rdfs:range crdt:CollaborationMechanism .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#dependency
+crdt:dependency rdf:type owl:ObjectProperty ;
+                rdfs:range crdt:Dependency .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#document
+crdt:document rdf:type owl:ObjectProperty ;
+              rdfs:domain crdt:CollaborativeResourceDesc ;
+              rdfs:range crdt:DocumentState .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#framework
+crdt:framework rdf:type owl:ObjectProperty ;
+               rdfs:domain crdt:CollaborativeResourceDesc ;
+               rdfs:range crdt:Framework .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#hasRepresentation
+crdt:hasRepresentation rdf:type owl:ObjectProperty ;
+                       owl:inverseOf crdt:isRepresentationOf ;
+                       rdfs:domain crdt:DocumentState ;
+                       rdfs:range crdt:HumanReadableState .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#isRepresentationOf
+crdt:isRepresentationOf rdf:type owl:ObjectProperty ;
+                        rdfs:domain crdt:HumanReadableState ;
+                        rdfs:range crdt:DocumentState .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#operation
+crdt:operation rdf:type owl:ObjectProperty ;
+               rdfs:range crdt:Operation .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#operationType
+crdt:operationType rdf:type owl:ObjectProperty ;
+                   rdfs:domain crdt:Operation ;
+                   rdfs:range crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#operations
+crdt:operations rdf:type owl:ObjectProperty ;
+                rdfs:domain crdt:State ;
+                rdfs:range rdf:List .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#state
+crdt:state rdf:type owl:ObjectProperty ;
+           rdfs:domain crdt:CollaborativeResourceDesc ;
+           rdfs:range crdt:State .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#storage
+crdt:storage rdf:type owl:ObjectProperty ;
+             rdfs:domain crdt:DocumentState ;
+             rdfs:range crdt:Storage .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#syncMechanism
+crdt:syncMechanism rdf:type owl:ObjectProperty ;
+                   rdfs:domain crdt:Operation ;
+                   rdfs:range crdt:Synchronization .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#withInput
+crdt:withInput rdf:type owl:ObjectProperty ;
+               rdfs:domain crdt:Operation ;
+               rdfs:range crdt:Input .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#collaborationMechanism
+crdt:collaborationMechanism rdf:type owl:DatatypeProperty ;
+                            rdfs:range xsd:string .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#description
+crdt:description rdf:type owl:DatatypeProperty ;
+                 rdfs:range xsd:string .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#function
+crdt:function rdf:type owl:DatatypeProperty ;
+              rdfs:domain crdt:Operation .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#href
+crdt:href rdf:type owl:DatatypeProperty ;
+          rdfs:domain crdt:Operation ;
+          rdfs:range xsd:anyURI .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#isRequired
+crdt:isRequired rdf:type owl:DatatypeProperty ;
+                rdfs:domain crdt:Input ;
+                rdfs:range xsd:boolean .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#mediaType
+crdt:mediaType rdf:type owl:DatatypeProperty ;
+               rdfs:domain crdt:State ;
+               rdfs:range xsd:string ;
+               rdfs:comment "The Media (MIME) Type of a resource" ;
+               rdfs:label "mediaType" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#method
+crdt:method rdf:type owl:DatatypeProperty ;
+            rdfs:domain crdt:Operation ;
+            rdfs:range xsd:string .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#name
+crdt:name rdf:type owl:DatatypeProperty ;
+          rdfs:domain crdt:Input ;
+          rdfs:range xsd:string .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#title
+crdt:title rdf:type owl:DatatypeProperty ;
+           rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.w3.org/1999/02/22-rdf-syntax-ns#List
+rdf:List rdf:type owl:Class .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Array
+crdt:Array rdf:type owl:Class ;
+           rdfs:subClassOf crdt:DataType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#CRDT
+crdt:CRDT rdf:type owl:Class ;
+          rdfs:subClassOf crdt:CollaborationMechanism ;
+          owl:disjointWith crdt:OT ;
+          rdfs:comment "A collaboration mechanism based on Conflict-free Replicated Data Types (CRDTs)."@en ;
+          rdfs:label "CRDT"@en .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#CollaborationMechanism
+crdt:CollaborationMechanism rdf:type owl:Class ;
+                            rdfs:comment "The collaboration mechanism of the collaborative resource." .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#CollaborativeResourceDesc
+crdt:CollaborativeResourceDesc rdf:type owl:Class ;
+                               rdfs:comment "A collaborative CRDT resource" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Counter
+crdt:Counter rdf:type owl:Class ;
+             rdfs:subClassOf crdt:DataType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Create
+crdt:Create rdf:type owl:Class ;
+            rdfs:subClassOf crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#DataType
+crdt:DataType rdf:type owl:Class ;
+              rdfs:comment "The data type of the shared data property or document" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Delete
+crdt:Delete rdf:type owl:Class ;
+            rdfs:subClassOf crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Dependency
+crdt:Dependency rdf:type owl:Class ;
+                rdfs:comment "Software and framework dependencies that are required to interact with the collaborative resource."@en .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#DocumentState
+crdt:DocumentState rdf:type owl:Class ;
+                   rdfs:subClassOf crdt:State ;
+                   owl:disjointWith crdt:HumanReadableState ;
+                   rdfs:comment "The document state of the collaborative CRDT resource. The state usually stores the full history of the document changes and is used to serialize the CRDT document. The document state requires the CRDT implementation framework to read it and is often stored in a binary format."@en .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Framework
+crdt:Framework rdf:type owl:Class ;
+               rdfs:subClassOf crdt:Dependency .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#FrameworkExtension
+crdt:FrameworkExtension rdf:type owl:Class ;
+                        rdfs:subClassOf crdt:Dependency .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#FrameworkOperation
+crdt:FrameworkOperation rdf:type owl:Class ;
+                        rdfs:subClassOf crdt:Operation ;
+                        rdfs:label "FrameworkOperation" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#HttpOperation
+crdt:HttpOperation rdf:type owl:Class ;
+                   rdfs:subClassOf crdt:Operation ;
+                   rdfs:label "HttpOperation" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#HumanReadableState
+crdt:HumanReadableState rdf:type owl:Class ;
+                        rdfs:subClassOf crdt:State ;
+                        rdfs:comment "A human readable representation of the collaborative CRDT resource." .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Input
+crdt:Input rdf:type owl:Class ;
+           rdfs:comment "Optional and required inputs of the operation." ;
+           rdfs:label "Input" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#LocalStorage
+crdt:LocalStorage rdf:type owl:Class ;
+                  rdfs:subClassOf crdt:Storage .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Map
+crdt:Map rdf:type owl:Class ;
+         rdfs:subClassOf crdt:DataType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#OT
+crdt:OT rdf:type owl:Class ;
+        rdfs:subClassOf crdt:CollaborationMechanism ;
+        rdfs:comment "A collaboration mechanism based on Operational Transformation (OT)." .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Operation
+crdt:Operation rdf:type owl:Class ;
+               rdfs:comment "An operation to interact with the Thing" ;
+               rdfs:label "Operation" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#OperationType
+crdt:OperationType rdf:type owl:Class ;
+                   rdfs:comment "The type of the operation." .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#PeerToPeer
+crdt:PeerToPeer rdf:type owl:Class ;
+                rdfs:subClassOf crdt:Synchronization ;
+                owl:disjointWith crdt:ServerClient .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Read
+crdt:Read rdf:type owl:Class ;
+          rdfs:subClassOf crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#ServerClient
+crdt:ServerClient rdf:type owl:Class ;
+                  rdfs:subClassOf crdt:Synchronization .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#State
+crdt:State rdf:type owl:Class ;
+           owl:disjointUnionOf ( crdt:DocumentState
+                                 crdt:HumanReadableState
+                               ) ;
+           rdfs:comment "A state of the collaborative resource. Must be either a DocumentState or a HumanReadableState." .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Storage
+crdt:Storage rdf:type owl:Class ;
+             rdfs:comment "A secondary storage of the CRDT resource" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Synchronization
+crdt:Synchronization rdf:type owl:Class ;
+                     rdfs:comment "A real-time connection for collaborating with peers on CRDT data" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Synchronize
+crdt:Synchronize rdf:type owl:Class ;
+                 rdfs:subClassOf crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Text
+crdt:Text rdf:type owl:Class ;
+          rdfs:subClassOf crdt:DataType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Update
+crdt:Update rdf:type owl:Class ;
+            rdfs:subClassOf crdt:OperationType .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#WorkspaceOperation
+crdt:WorkspaceOperation rdf:type owl:Class ;
+                        rdfs:subClassOf crdt:Operation ;
+                        rdfs:label "WorkspaceOperation" .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#XML
+crdt:XML rdf:type owl:Class ;
+         rdfs:subClassOf crdt:DataType .
+
+
+###  https://www.w3.org/ns/pim/space#Workspace
+<https://www.w3.org/ns/pim/space#Workspace> rdf:type owl:Class ;
+                                            rdfs:subClassOf crdt:Storage .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Automerge
+crdt:Automerge rdf:type owl:NamedIndividual ,
+                        crdt:Framework .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#YWebRtc
+crdt:YWebRtc rdf:type owl:NamedIndividual ,
+                      crdt:FrameworkExtension .
+
+
+###  https://imp.inrupt.net/ontologies/crdt.ttl#Yjs
+crdt:Yjs rdf:type owl:NamedIndividual ,
+                  crdt:Framework .
+
+
+#################################################################
+#    Annotations
+#################################################################
+
+crdt:content rdfs:comment "The content property of a Y.Doc, a Y.Text" .
+
+
+crdt:user rdfs:comment "The user property of a Y.Doc, a Y.Map" .
+
+
+#################################################################
+#    General axioms
+#################################################################
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( crdt:Array
+                crdt:Counter
+                crdt:Map
+                crdt:Text
+                crdt:XML
+              )
+] .
+
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( crdt:Create
+                crdt:Delete
+                crdt:Read
+                crdt:Synchronize
+                crdt:Update
+              )
+] .
+
+
+###  Generated by the OWL API (version 4.5.25.2023-02-15T19:15:49Z) https://github.com/owlcs/owlapi
