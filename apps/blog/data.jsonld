@@ -1,0 +1,73 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "crdt": "https://imp.inrupt.net/ontologies/crdt.ttl#"
+  },
+  "@id": "https://imp.inrupt.net/local-first/blog/content.jsonld",
+  "@type": "crdt:TextualRepresentation",
+  "about": {
+    "title": "ABOUT THE CAFE",
+    "p": [
+      "The Cafe was founded in blabla by Mr. Smith in lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "In addition to our full espresso and brew bar menu, we serve fresh made-to-order breakfast and lunch sandwiches, as well as a selection of sides and salads and other good stuff."
+    ],
+    "quote": "\"Use products from nature for what it's worth - but never too early, nor too late.\" Fresh is the new sweet.",
+    "author": "Chef, Coffeeist and Owner: Liam Brown"
+  },
+  "menu": [
+    {
+      "title": "Meals",
+      "items": [
+        {
+          "name": "Bread Basket",
+          "p": "Assortment of fresh baked fruit breads and muffins 5.50"
+        },
+        {
+          "name": "Honey Almond Granola with Fruits",
+          "p": "Natural cereal of honey toasted oats, raisins, almonds and dates 7.00"
+        },
+        {
+          "name": "Belgian Waffle",
+          "p": "Vanilla flavored batter with malted flour 7.50"
+        },
+        {
+          "name": "Scrambled eggs",
+          "p": "Scrambled eggs, roasted red pepper and garlic, with green onions 7.50"
+        },
+        {
+          "name": "Blueberry Pancakes",
+          "p": "With syrup, butter and lots of berries 8.50"
+        }
+      ]
+    },
+    {
+      "title": "Drinks",
+      "items": [
+        {
+          "name": "Coffee",
+          "p": "Regular coffee 2.50"
+        },
+        {
+          "name": "Chocolato",
+          "p": "Chocolate espresso with milk 4.50"
+        },
+        {
+          "name": "Corretto",
+          "p": "Whiskey and coffee 5.00"
+        },
+        {
+          "name": "Americano",
+          "p": "American coffee with milk 5.00"
+        },
+        {
+          "name": "Cappuccino",
+          "p": "Regular cappuccino 3.50"
+        },
+        {
+          "name": "Espresso",
+          "p": "Regular espresso 3.00"
+        }
+      ]
+    }
+  ]
+}

@@ -24,13 +24,6 @@ export class SyncedJsonLD extends JsonLD {
     let jsonld = addContext(json, url);
     let store = syncedStoreWithRoot(rootProperty);
 
-    console.log(
-      '[SyncedJsonLD]',
-      store,
-      store.jsonld,
-      getYjsDoc(store).toJSON()
-    );
-
     // Convert JSON-LD to Yjs and store it in the root property
     const rootMap = getYjsDoc(store).getMap(rootProperty);
     nestedYDocFromJson(jsonld, rootMap);
@@ -97,8 +90,6 @@ function addContext(json, url = null) {
 function syncedStoreWithRoot(rootProperty = 'jsonld') {
   let rootShape = {};
   rootShape[rootProperty] = {};
-
-  console.log('[SyncedJsonLD] shape', rootShape);
 
   return syncedStore(rootShape);
 }

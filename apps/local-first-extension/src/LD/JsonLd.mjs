@@ -177,12 +177,11 @@ export class JsonLD {
     }
   }
 
-  isExpanded(property) {
-    if (typeof property !== 'object') {
+  isExpanded(target) {
+    if (typeof target !== 'object') {
       return false;
     }
-    const keysToCheck = ['@value', '@id', '@type'];
-    return keysToCheck.some((key) => Object.hasOwn(property, key));
+    return containsAnyProperty(target, ['@value', '@list', '@set']);
   }
 
   addType(target, type, prop = null) {
@@ -296,6 +295,19 @@ export class JsonLD {
     return target === this.root && !prop;
   }
 
+  // Defined at: https://www.w3.org/TR/json-ld/#dfn-node-object
+  isNodeObject(target) {
+    return (
+      typeof target === 'object' &&
+      !Array.isArray(target) &&
+      !this.isExpanded(target) &&
+      !(
+        this.isRoot(target) &&
+        containsOnlyProperties(target, ['@context', '@graph'])
+      )
+    );
+  }
+
   toJsonLd() {
     return JSON.stringify(this.root);
   }
@@ -305,4 +317,19 @@ export class JsonLD {
       typeof target === 'object' ? getYjsValue(target).toJSON() : target
     );
   }
+}
+
+function containsAllProperties(target, properties) {
+  return properties.every((property) => Object.hasOwn(target, property));
+}
+
+function containsAnyProperty(target, properties) {
+  return properties.some((property) => Object.hasOwn(target, property));
+}
+
+function containsOnlyProperties(target, properties) {
+  return (
+    Object.keys(target).length === properties.length &&
+    containsAllProperties(target, properties)
+  );
 }

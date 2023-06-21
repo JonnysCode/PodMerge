@@ -58,7 +58,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     case 'LOG':
       console.log('Session: ', session);
       console.log('Framework: ', await ldStore.getFramework());
-      await ldStore.log();
+      //await ldStore.log();
+      console.log(data.toJsonLd());
       break;
     case 'TEST':
       console.log('Test...');
@@ -98,7 +99,7 @@ async function initFromJson() {
     data = SyncedJsonLD.fromJson(json, jsonUrl);
     console.log('Data: ', data.toJsonLd());
     contentProvider = new YjsContentProvider(
-      data.store,
+      data,
       'data-yjs',
       data.rootProperty
     );

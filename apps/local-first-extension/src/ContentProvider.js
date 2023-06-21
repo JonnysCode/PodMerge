@@ -21,6 +21,7 @@ export class ContentProvider extends Observable {
     const dataEls = document.querySelectorAll(`[${this.dataAttribute}]`);
     for (const element of dataEls) {
       this.renderElement(element);
+      this.removeInputListener(element);
       this.addInputListener(element);
     }
   }
@@ -34,6 +35,11 @@ export class ContentProvider extends Observable {
   addInputListener(element) {
     const boundHandleInputChange = this.handleInputChange.bind(this);
     element.addEventListener('input', boundHandleInputChange, false);
+  }
+
+  removeInputListener(element) {
+    const boundHandleInputChange = this.handleInputChange.bind(this);
+    element.removeEventListener('input', boundHandleInputChange, false);
   }
 
   handleInputChange(event) {
@@ -60,10 +66,11 @@ export class ContentProvider extends Observable {
  * Gets an attribute value from an element and converts it to an array.
  * Example: "about-p-0" => ['about', 'p', 0]
  * @param {string} str
+ * @param {string} delimiter - defaults to '-'
  * @returns {Array<string|number>}
  */
-export function dataPathToArray(str) {
-  const arr = str.split('-');
+export function dataPathToArray(str, delimiter = '-') {
+  const arr = str.split(delimiter);
   return arr.map((element) => {
     if (!isNaN(element)) {
       return parseInt(element);

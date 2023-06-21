@@ -1,14 +1,12 @@
 import * as Y from 'yjs';
-import { getYjsDoc } from '@syncedstore/core';
 import { ContentProvider } from '../ContentProvider';
 
 export class YjsContentProvider extends ContentProvider {
-  constructor(store, dataAttribute = 'data-yjs', docRoot = 'data') {
-    super(store[docRoot], dataAttribute);
+  constructor(data, dataAttribute = 'data-yjs') {
+    super(data, dataAttribute);
 
-    this.ydoc = getYjsDoc(store);
-    this.store = store;
-    this.docRoot = docRoot;
+    this.ydoc = data.doc;
+    this.store = data.store;
 
     this.ydoc.on('update', (update, origin) => {
       if (origin !== this && origin !== null) {
@@ -26,7 +24,7 @@ export class YjsContentProvider extends ContentProvider {
   applyUpdate(update) {
     const { path, value } = update;
 
-    let currentObj = this.store.data;
+    let currentObj = this.doc;
     for (let i = 0; i < path.length - 1; i++) {
       currentObj = currentObj[path[i]];
     }
