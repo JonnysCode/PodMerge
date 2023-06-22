@@ -1,13 +1,15 @@
 'use strict';
 
 import './contentScript.css';
+import './main.css';
+
 import { YjsStore } from './y/YjsStore.mjs';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';
-import { ContentProvider } from './ContentProvider.js';
+import { ContentProvider } from './editor/ContentProvider.js';
 import { YjsContentProvider } from './y/YjsContentProvider.js';
-import { LinkedDataEditor } from './content/LinkedDataEditor';
+import { LinkedDataEditor } from './editor/LinkedDataEditor';
 import { SyncedJsonLD } from './y/SyncedJsonLD.mjs';
 
 const currentPageUrl = window.location.href;
@@ -22,18 +24,16 @@ let store = null;
 let data = null;
 let session = getSession();
 let contentProvider = null;
+let ldEditor = null;
 
 const ldStore = new LDStore(baseUrl + 'context.ttl');
 
 const hasDesc = await ldStore.isCollaborativeResource();
 
-if (hasDesc) {
-  console.log('CollaborativeResourceDesc found');
-  const editor = new LinkedDataEditor();
-}
-
 const framework = await ldStore.getFramework();
 console.log('Framework: ', framework);
+
+document.getElementById('menu').classList.add('pb-12');
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   switch (request.type) {
@@ -103,6 +103,7 @@ async function initFromJson() {
       'data-yjs',
       data.rootProperty
     );
+    ldEditor = new LinkedDataEditor(contentProvider);
   } else if (framework === 'Automerge') {
     const response = await sendGlobalMessage('INIT', {
       name: baseUrl,

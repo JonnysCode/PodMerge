@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { ContentProvider } from '../ContentProvider';
+import { ContentProvider } from '../editor/ContentProvider';
 
 export class YjsContentProvider extends ContentProvider {
   constructor(data, dataAttribute = 'data-yjs') {

@@ -32,7 +32,7 @@ const common = {
       // Help webpack in understanding CSS files imported in .js files
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       // Check for images imported in .js files and
       {

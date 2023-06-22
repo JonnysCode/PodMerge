@@ -4,7 +4,7 @@ import syncedStore, {
   getYjsValue,
 } from '@syncedstore/core';
 import { JsonLD, CONSTRUCTOR_KEY } from '../LD/JsonLd.mjs';
-import ontologies from '../LD/ontologies.json' assert { type: 'json' };
+import ontologies from '../LD/data/ontologies.json' assert { type: 'json' };
 import { nestedYDocFromJson } from './util.mjs';
 
 export class SyncedJsonLD extends JsonLD {
@@ -27,13 +27,6 @@ export class SyncedJsonLD extends JsonLD {
     // Convert JSON-LD to Yjs and store it in the root property
     const rootMap = getYjsDoc(store).getMap(rootProperty);
     nestedYDocFromJson(jsonld, rootMap);
-
-    console.log(
-      '[SyncedJsonLD]',
-      store,
-      store.jsonld,
-      getYjsDoc(store).toJSON()
-    );
 
     return this.classProxy(
       new SyncedJsonLD(store, CONSTRUCTOR_KEY, rootProperty)

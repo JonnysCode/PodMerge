@@ -28,6 +28,7 @@
     }
   ],
   "web_accessible_resources": [
-    { "resources": ["/images/*"], "matches": ["https://*/*"] }
+    { "resources": ["/images/*"], "matches": ["https://*/*"] },
+    { "resources": ["main.css"], "matches": ["https://*/*"] }
   ]
 }

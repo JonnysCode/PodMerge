@@ -1,4 +1,4 @@
-import ontologies from './ontologies.json' assert { type: 'json' };
+import ontologies from './data/ontologies.json' assert { type: 'json' };
 import { SyncedMap, getYjsValue } from '@syncedstore/core';
 
 export const CONSTRUCTOR_KEY = Symbol();
@@ -71,50 +71,24 @@ export class JsonLD {
     });
   }
 
-  #dataProxies() {
-    Object.keys(this.root).forEach((key) => {
-      if (typeof this.root[key] === 'object' && this.root[key] !== null) {
-        this.root[key] = this.#createProxy(this.root[key]);
-      }
-    });
-  }
-
-  #createProxy(value) {
-    if (typeof value === 'object' && value !== null) {
-      return new Proxy(value, {
-        get: (target, prop) => {
-          if (
-            !Object.hasOwn(target, prop) &&
-            Object.hasOwn(target, '@' + String(prop))
-          ) {
-            prop = '@' + String(prop);
-          }
-          const property = target[prop];
-
-          return typeof property === 'object' && property !== null
-            ? this.#createProxy(property)
-            : property;
-        },
-        set: (target, prop, newValue) => {
-          if (typeof newValue === 'object' && newValue !== null) {
-            newValue = this.#createProxy(newValue);
-          }
-          if (
-            !Object.hasOwn(target, prop) &&
-            Object.hasOwn(target, '@' + String(prop))
-          ) {
-            prop = '@' + String(prop);
-          }
-
-          target[prop] = newValue;
-          return true;
-        },
-      });
-    }
-  }
-
   get root() {
     return this.rootProperty ? this.data[this.rootProperty] : this.data;
+  }
+
+  getContext(target = this.root) {
+    if (containsProperty(target, '@context')) {
+      return target['@context'];
+    }
+
+    return null;
+  }
+
+  getId(target = this.root) {
+    return target['@id'];
+  }
+
+  getType(target = this.root) {
+    return target['@type'];
   }
 
   /**Returns the target and property of a given path in the data.
@@ -295,19 +269,6 @@ export class JsonLD {
     return target === this.root && !prop;
   }
 
-  // Defined at: https://www.w3.org/TR/json-ld/#dfn-node-object
-  isNodeObject(target) {
-    return (
-      typeof target === 'object' &&
-      !Array.isArray(target) &&
-      !this.isExpanded(target) &&
-      !(
-        this.isRoot(target) &&
-        containsOnlyProperties(target, ['@context', '@graph'])
-      )
-    );
-  }
-
   toJsonLd() {
     return JSON.stringify(this.root);
   }
@@ -317,14 +278,102 @@ export class JsonLD {
       typeof target === 'object' ? getYjsValue(target).toJSON() : target
     );
   }
+
+  #dataProxies() {
+    Object.keys(this.root).forEach((key) => {
+      if (typeof this.root[key] === 'object' && this.root[key] !== null) {
+        this.root[key] = this.#createProxy(this.root[key]);
+      }
+    });
+  }
+
+  #createProxy(value) {
+    if (typeof value === 'object' && value !== null) {
+      return new Proxy(value, {
+        get: (target, prop) => {
+          if (
+            !Object.hasOwn(target, prop) &&
+            Object.hasOwn(target, '@' + String(prop))
+          ) {
+            prop = '@' + String(prop);
+          }
+          const property = target[prop];
+
+          return typeof property === 'object' && property !== null
+            ? this.#createProxy(property)
+            : property;
+        },
+        set: (target, prop, newValue) => {
+          if (typeof newValue === 'object' && newValue !== null) {
+            newValue = this.#createProxy(newValue);
+          }
+          if (
+            !Object.hasOwn(target, prop) &&
+            Object.hasOwn(target, '@' + String(prop))
+          ) {
+            prop = '@' + String(prop);
+          }
+
+          target[prop] = newValue;
+          return true;
+        },
+      });
+    }
+  }
+}
+
+// Defined at: https://www.w3.org/TR/json-ld/#node-objects
+export function isNodeObject(target) {
+  return (
+    typeof target === 'object' &&
+    !Array.isArray(target) &&
+    !containsAnyProperty(target, ['@value', '@list', '@set']) &&
+    !containsOnlyProperties(target, ['@context', '@graph']) &&
+    !isGraphObject(target)
+  );
+}
+
+// Defined at: https://www.w3.org/TR/json-ld/#graph-objects
+export function isGraphObject(target) {
+  return (
+    typeof target === 'object' &&
+    !Array.isArray(target) &&
+    containsProperty(target, '@graph') &&
+    !containsPropertyOtherThan(target, [
+      '@graph',
+      '@context',
+      '@index',
+      '@id',
+    ]) &&
+    !containsAllProperties(target, ['@graph', '@context'])
+  );
+}
+
+// Defined at: https://www.w3.org/TR/json-ld/#value-objects
+export function isValueObject(target) {
+  return (
+    typeof target === 'object' &&
+    !Array.isArray(target) &&
+    containsProperty(target, '@value') &&
+    !containsPropertyOtherThan(target, [
+      '@value',
+      '@language',
+      '@type',
+      '@index',
+      '@direction',
+      '@context',
+    ]) &&
+    !containsAllProperties(target, ['@type', '@language']) &&
+    !containsAllProperties(target, ['@type', '@direction'])
+  );
 }
 
 function containsAllProperties(target, properties) {
-  return properties.every((property) => Object.hasOwn(target, property));
+  return properties.every((property) => containsProperty(target, property));
 }
 
 function containsAnyProperty(target, properties) {
-  return properties.some((property) => Object.hasOwn(target, property));
+  return properties.some((property) => containsProperty(target, property));
 }
 
 function containsOnlyProperties(target, properties) {
@@ -332,4 +381,12 @@ function containsOnlyProperties(target, properties) {
     Object.keys(target).length === properties.length &&
     containsAllProperties(target, properties)
   );
+}
+
+function containsPropertyOtherThan(target, properties) {
+  return Object.keys(target).some((property) => !properties.includes(property));
+}
+
+function containsProperty(target, property) {
+  return Object.hasOwn(target, property);
 }

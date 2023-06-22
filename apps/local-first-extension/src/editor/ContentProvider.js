@@ -1,5 +1,6 @@
 import { Observable } from 'lib0/observable';
-import { sendGlobalMessage } from './util';
+import { sendGlobalMessage } from '../util';
+import { constructUpdate, dataPathToArray } from './util';
 
 export class ContentProvider extends Observable {
   constructor(doc, dataAttribute = 'data-yjs') {
@@ -18,8 +19,7 @@ export class ContentProvider extends Observable {
   }
 
   render() {
-    const dataEls = document.querySelectorAll(`[${this.dataAttribute}]`);
-    for (const element of dataEls) {
+    for (const element of this.dataElements) {
       this.renderElement(element);
       this.removeInputListener(element);
       this.addInputListener(element);
@@ -60,26 +60,12 @@ export class ContentProvider extends Observable {
     }
     return currentObj;
   }
-}
 
-/**
- * Gets an attribute value from an element and converts it to an array.
- * Example: "about-p-0" => ['about', 'p', 0]
- * @param {string} str
- * @param {string} delimiter - defaults to '-'
- * @returns {Array<string|number>}
- */
-export function dataPathToArray(str, delimiter = '-') {
-  const arr = str.split(delimiter);
-  return arr.map((element) => {
-    if (!isNaN(element)) {
-      return parseInt(element);
-    } else {
-      return element;
-    }
-  });
-}
+  isDataElement(element) {
+    return element.hasAttribute(this.dataAttribute);
+  }
 
-export function constructUpdate(dataPath, updatedValue) {
-  return { path: dataPathToArray(dataPath), value: updatedValue };
+  get dataElements() {
+    return document.querySelectorAll(`[${this.dataAttribute}]`);
+  }
 }

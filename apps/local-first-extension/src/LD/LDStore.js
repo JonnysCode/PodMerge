@@ -2,7 +2,7 @@ import { PathFactory } from 'ldflex';
 import ComunicaEngine from '@ldflex/comunica';
 import { namedNode } from '@rdfjs/data-model';
 
-import context from './context.json';
+import context from './data/context.json';
 import { constructRequest } from '../solid/fetch';
 
 export class LDStore {
