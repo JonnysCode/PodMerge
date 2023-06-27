@@ -1,9 +1,13 @@
 import '../contentScript.css';
+import { Observable } from 'lib0/observable';
+import { PropertySection } from '../components/PropertySection';
+import { ValueSection } from '../components/ValueSection';
+import { BreadCrumb } from '../components/BreadCrumb';
+import { Path } from '../components/Path';
 
-export class SidePanel {
-  constructor(jsonld) {
-    this._jsonld = jsonld;
-    console.log('SidePanel: constructor: ', this._jsonld);
+export class SidePanel extends Observable {
+  constructor() {
+    super();
 
     this.isOpen = false;
 
@@ -16,21 +20,20 @@ export class SidePanel {
       pairsList: null,
       floatingButton: null,
       titleElement: null,
+      propertySection: null,
+      valueSection: null,
+      breadCrumb: null,
     };
 
-    this.render();
+    this._create();
+
+    this.on('update', (path) => {
+      console.log('SidePanel: update: ', path);
+      this.render(path);
+    });
   }
 
-  set data(data) {
-    console.log('SidePanel: set data: ', data);
-    this._jsonld = data;
-  }
-
-  get data() {
-    return this._jsonld;
-  }
-
-  render() {
+  _create() {
     this._createButton();
     this._createPanel();
   }
@@ -44,47 +47,17 @@ export class SidePanel {
     this.els.closeButton.className = 'close-button';
     this.els.closeButton.textContent = 'Close';
     this.els.panelElement.appendChild(this.els.closeButton);
-
-    this.els.titleElement = document.createElement('h2');
-    this.els.titleElement.className = 'panel-title';
-    this.els.titleElement.textContent = 'Element Name';
-    this.els.panelElement.appendChild(this.els.titleElement);
-
-    this.els.typeInput = document.createElement('input');
-    this.els.typeInput.type = 'text';
-
-    this.els.typeLabel = document.createElement('label');
-    this.els.typeLabel.className = 'label';
-    this.els.typeLabel.textContent = '@Type ';
-    this.els.typeLabel.appendChild(this.els.typeInput);
-
-    this.els.panelElement.appendChild(this.els.typeLabel);
-    this.els.pairsList = document.createElement('ul');
-    this.els.panelElement.appendChild(this.els.pairsList);
-
-    this.els.addButton = document.createElement('button');
-    this.els.addButton.className = 'add-button';
-    this.els.addButton.textContent = 'Add Annotation';
-    this.els.panelElement.appendChild(this.els.addButton);
     this.els.closeButton.addEventListener('click', () => {
       this.toggle();
     });
 
-    this.els.addButton.addEventListener('click', () => {
-      this.addKeyValuePair();
-    });
-  }
+    this.renderBreadcrumb([]);
 
-  _createSection(title) {
-    const section = document.createElement('div');
-    section.className = 'section';
+    this.els.propertySection = PropertySection('p');
+    this.els.panelElement.appendChild(this.els.propertySection);
 
-    const sectionTitle = document.createElement('h3');
-    sectionTitle.className = 'section-title';
-    sectionTitle.textContent = title;
-    section.appendChild(sectionTitle);
-
-    return section;
+    this.els.valueSection = ValueSection('p[1]', 'crdt:Text');
+    this.els.panelElement.appendChild(this.els.valueSection);
   }
 
   _createButton() {
@@ -101,6 +74,22 @@ export class SidePanel {
     this.els.floatingButton.addEventListener('click', () => {
       this.toggle();
     });
+  }
+
+  render(path) {
+    this.renderBreadcrumb(path);
+  }
+
+  renderBreadcrumb(path) {
+    const breadCrumb = BreadCrumb('jsonld-path', path);
+    const existingBreadCrumb = document.getElementById('jsonld-path');
+    console.log('existingBreadCrumb: ', existingBreadCrumb);
+    console.log('breadCrumb: ', breadCrumb);
+    if (existingBreadCrumb) {
+      existingBreadCrumb.replaceWith(breadCrumb);
+    } else {
+      this.els.panelElement.appendChild(breadCrumb);
+    }
   }
 
   setTitle(title) {

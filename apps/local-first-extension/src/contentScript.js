@@ -2,6 +2,7 @@
 
 import './contentScript.css';
 import './main.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import { YjsStore } from './y/YjsStore.mjs';
 import { LDStore } from './LD/LDStore.js';
@@ -9,7 +10,6 @@ import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';
 import { ContentProvider } from './editor/ContentProvider.js';
 import { YjsContentProvider } from './y/YjsContentProvider.js';
-import { LinkedDataEditor } from './editor/LinkedDataEditor';
 import { SyncedJsonLD } from './y/SyncedJsonLD.mjs';
 
 const currentPageUrl = window.location.href;
@@ -21,10 +21,9 @@ const jsonUrl = baseUrl + 'content.json';
 console.log(`JSON data URL is: '${jsonUrl}'`);
 
 let store = null;
-let data = null;
+let jsonld = null;
 let session = getSession();
 let contentProvider = null;
-let ldEditor = null;
 
 const ldStore = new LDStore(baseUrl + 'context.ttl');
 
@@ -32,6 +31,20 @@ const hasDesc = await ldStore.isCollaborativeResource();
 
 const framework = await ldStore.getFramework();
 console.log('Framework: ', framework);
+
+if (hasDesc && framework === 'Yjs') {
+  console.log('Collaborative Yjs resource');
+
+  console.log('Init from JSON...');
+  let json = await getJSON(jsonUrl);
+  jsonld = SyncedJsonLD.fromJson(json, jsonUrl);
+
+  contentProvider = new YjsContentProvider(
+    jsonld,
+    'data-yjs',
+    jsonld.rootProperty
+  );
+}
 
 document.getElementById('menu').classList.add('pb-12');
 
@@ -59,7 +72,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       console.log('Session: ', session);
       console.log('Framework: ', await ldStore.getFramework());
       //await ldStore.log();
-      console.log(data.toJsonLd());
+      console.log(jsonld.toJsonLd());
       break;
     case 'TEST':
       console.log('Test...');
@@ -96,14 +109,13 @@ async function initFromJson() {
 
   if (framework === 'Yjs') {
     //store = YjsStore.fromJson(baseUrl, json);
-    data = SyncedJsonLD.fromJson(json, jsonUrl);
-    console.log('Data: ', data.toJsonLd());
+    jsonld = SyncedJsonLD.fromJson(json, jsonUrl);
+    console.log('Data: ', jsonld.toJsonLd());
     contentProvider = new YjsContentProvider(
-      data,
+      jsonld,
       'data-yjs',
-      data.rootProperty
+      jsonld.rootProperty
     );
-    ldEditor = new LinkedDataEditor(contentProvider);
   } else if (framework === 'Automerge') {
     const response = await sendGlobalMessage('INIT', {
       name: baseUrl,

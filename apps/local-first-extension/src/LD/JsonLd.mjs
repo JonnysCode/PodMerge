@@ -104,9 +104,9 @@ export class JsonLD {
    * @param {*} path
    * @returns { target, prop }
    */
-  getTargetAndProp(path) {
+  getTargetAndProp(path, delimiter = '.') {
     if (typeof path === 'string') {
-      path = path.split('.');
+      path = path.split(delimiter);
     }
 
     let target = this.root;
@@ -117,6 +117,30 @@ export class JsonLD {
     }
 
     return { target, prop };
+  }
+
+  getPropertyDesc(path, delimiter = '.') {
+    let properties = path.split(delimiter);
+
+    // get last element in properties that is not numeric
+    let property = properties.pop();
+    while (isNumeric(property)) {
+      property = properties.pop();
+    }
+
+    return {
+      path: path,
+      property: property,
+      context: this.getPropertyContext(property),
+    };
+  }
+
+  getPropertyContext(property) {
+    let context = this.getContext();
+
+    if (containsProperty(context, property)) {
+      return context[property];
+    }
   }
 
   /**
@@ -389,4 +413,9 @@ function containsPropertyOtherThan(target, properties) {
 
 function containsProperty(target, property) {
   return Object.hasOwn(target, property);
+}
+
+function isNumeric(str) {
+  if (typeof str != 'string') return false;
+  return !isNaN(str) && !isNaN(parseFloat(str));
 }

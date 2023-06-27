@@ -1,6 +1,11 @@
 import { Observable } from 'lib0/observable';
 import { sendGlobalMessage } from '../util';
-import { constructUpdate, dataPathToArray } from './util';
+import {
+  constructUpdate,
+  dataPathToArray,
+  dataPathToStringArray,
+} from './util';
+import { SidePanel } from './SidePanel';
 
 export class ContentProvider extends Observable {
   constructor(doc, dataAttribute = 'data-yjs') {
@@ -8,6 +13,7 @@ export class ContentProvider extends Observable {
 
     this.doc = doc;
     this.dataAttribute = dataAttribute;
+    this.sidePanel = new SidePanel();
 
     this.render();
 
@@ -23,6 +29,7 @@ export class ContentProvider extends Observable {
       this.renderElement(element);
       this.removeInputListener(element);
       this.addInputListener(element);
+      this.addClickListener(element);
     }
   }
 
@@ -48,6 +55,19 @@ export class ContentProvider extends Observable {
     this.applyUpdate(constructUpdate(dataPath, updatedValue));
   }
 
+  addClickListener(element) {
+    const boundHandleClick = this.handleClick.bind(this);
+    element.addEventListener('click', boundHandleClick, false);
+  }
+
+  handleClick(event) {
+    const element = event.target;
+    const path = this.dataPathFor(element);
+
+    this.sidePanel.open();
+    this.sidePanel.emit('update', [path]);
+  }
+
   applyUpdate(update) {
     sendGlobalMessage('UPDATE', { update });
   }
@@ -63,6 +83,15 @@ export class ContentProvider extends Observable {
 
   isDataElement(element) {
     return element.hasAttribute(this.dataAttribute);
+  }
+
+  dataPathFor(element) {
+    return dataPathToArray(element.getAttribute(this.dataAttribute));
+  }
+
+  dataTargetAndPropFor(element) {
+    const dataPath = this.dataPathFor(element);
+    return this.doc.getTargetAndProp(dataPath, '-');
   }
 
   get dataElements() {

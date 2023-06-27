@@ -28,7 +28,7 @@
     }
   ],
   "web_accessible_resources": [
-    { "resources": ["/images/*"], "matches": ["https://*/*"] },
-    { "resources": ["main.css"], "matches": ["https://*/*"] }
+    { "resources": ["/images/*"], "matches": ["https://*.inrupt.net/*"] },
+    { "resources": ["main.css"], "matches": ["https://*.inrupt.net/*"] }
   ]
 }
