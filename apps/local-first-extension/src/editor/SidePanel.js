@@ -5,6 +5,10 @@ import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
 import { Path } from '../components/Path';
 
+const breadCrumbId = 'bread-crumb';
+const propertySectionId = 'property-section';
+const valueSectionId = 'value-section';
+
 export class SidePanel extends Observable {
   constructor() {
     super();
@@ -81,14 +85,34 @@ export class SidePanel extends Observable {
   }
 
   renderBreadcrumb(path) {
-    const breadCrumb = BreadCrumb('jsonld-path', path);
-    const existingBreadCrumb = document.getElementById('jsonld-path');
+    const breadCrumb = BreadCrumb(breadCrumbId, path);
+    const existingBreadCrumb = document.getElementById(breadCrumbId);
     console.log('existingBreadCrumb: ', existingBreadCrumb);
     console.log('breadCrumb: ', breadCrumb);
     if (existingBreadCrumb) {
       existingBreadCrumb.replaceWith(breadCrumb);
     } else {
       this.els.panelElement.appendChild(breadCrumb);
+    }
+  }
+
+  renderPropertySection(property) {
+    const propertySection = PropertySection(propertySectionId, property);
+    const existingPropertySection = document.getElementById(propertySectionId);
+    if (existingPropertySection) {
+      existingPropertySection.replaceWith(propertySection);
+    } else {
+      this.els.panelElement.appendChild(propertySection);
+    }
+  }
+
+  renderValueSection(value) {
+    const valueSection = ValueSection(valueSectionId, value);
+    const existingValueSection = document.getElementById(valueSectionId);
+    if (existingValueSection) {
+      existingValueSection.replaceWith(valueSection);
+    } else {
+      this.els.panelElement.appendChild(valueSection);
     }
   }
 

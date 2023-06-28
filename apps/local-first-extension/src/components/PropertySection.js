@@ -1,15 +1,30 @@
 import { TextInput } from './TextInput';
 import { t } from './util';
 
-export const PropertySection = (property) => {
+const initialProperty = {
+  name: 'articleBody',
+  context: {
+    '@type': '@id',
+    '@id': 'schema:articleBody',
+  },
+};
+
+export const PropertySection = (id, property) => {
+  property = initialProperty;
   return t.div(
     {
-      class: 'flex flex-col p-2 gap-2',
+      id: id,
+      class: 'flex flex-col mt-4 gap-2',
     },
     [
-      t.h3({ class: 'text-lg font-semibold' }, [('Property: ', property)]),
-      TextInput('path', 'Property Path', 'value', { disabled: true }),
-      TextInput('path', 'Property Type', 'schema:articleBody', {}),
+      t.h3({ class: 'text-lg font-semibold  text-gray-800' }, [
+        'Property "',
+        property.name,
+        '" context',
+      ]),
+      ...Object.keys(property.context).map((key) => {
+        return TextInput(key, key, property.context[key]);
+      }),
     ]
   );
 };
