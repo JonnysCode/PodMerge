@@ -7,7 +7,7 @@ export const BreadCrumb = (id, path) => {
     t.ol(
       {
         role: 'list',
-        class: 'tw-flex tw-flex-wrap tw-items-center tw-space-x-4',
+        class: 'tw-flex tw-flex-wrap tw-items-center tw-space-x-3',
       },
       [
         t.li({}, [
@@ -15,9 +15,15 @@ export const BreadCrumb = (id, path) => {
             t.a(
               {
                 href: '#',
-                class: 'tw-text-gray-400 tw-hover:text-gray-600',
+                class:
+                  'tw-flex tw-flex-row tw-text-gray-400 hover:tw-text-gray-600',
               },
-              [File()]
+              [
+                t.span({ class: 'tw-text-sm tw-font-bold tw-mr-1' }, [
+                  'JSON-LD',
+                ]),
+                File(),
+              ]
             ),
           ]),
         ]),
@@ -30,7 +36,7 @@ export const BreadCrumb = (id, path) => {
                 {
                   href: '#',
                   class:
-                    'tw-ml-4 tw-text-lg tw-font-medium tw-text-gray-600 tw-hover:text-gray-800',
+                    'tw-ml-3 tw-text-lg tw-font-medium tw-text-gray-600 hover:tw-text-gray-800',
                 },
                 [formattedItem]
               ),

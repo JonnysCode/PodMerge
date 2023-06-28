@@ -3,11 +3,13 @@ import { Observable } from 'lib0/observable';
 import { PropertySection } from '../components/PropertySection';
 import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
-import { Path } from '../components/Path';
+import { FloatingButton } from '../components/FloatingButton';
+import { Edit } from '../components/icons/Edit';
 
 const breadCrumbId = 'bread-crumb';
 const propertySectionId = 'property-section';
 const valueSectionId = 'value-section';
+const floatingButtonId = 'floating-button';
 
 export class SidePanel extends Observable {
   constructor() {
@@ -65,19 +67,18 @@ export class SidePanel extends Observable {
   }
 
   _createButton() {
-    this.els.floatingButton = document.createElement('button');
-    this.els.floatingButton.classList.add('floating-button');
+    this.els.floatingButton = FloatingButton(
+      floatingButtonId,
+      [Edit('2em')],
+      () => {
+        console.log('floatingButton: click');
+        this.toggle();
+      }
+    );
 
-    const img = document.createElement('img');
-    img.src = chrome.runtime.getURL('images/edit2.png');
-    img.alt = 'Button Icon';
-    this.els.floatingButton.appendChild(img);
+    console.log('this.els.floatingButton: ', this.els.floatingButton);
 
     document.body.appendChild(this.els.floatingButton);
-
-    this.els.floatingButton.addEventListener('click', () => {
-      this.toggle();
-    });
   }
 
   render(path) {

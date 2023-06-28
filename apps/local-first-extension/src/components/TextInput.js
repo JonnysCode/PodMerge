@@ -19,7 +19,7 @@ export const TextInput = (id, label, value, attrs = {}) => {
           value: value || '',
           disabled: attrs.disabled || false,
           class:
-            'tw-block tw-w-full tw-rounded-md tw-border-0 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-gray-300 tw-placeholder:text-gray-400 tw-focus:ring-2 tw-focus:ring-inset tw-focus:ring-indigo-600 tw-disabled:cursor-not-allowed tw-disabled:bg-gray-50 tw-disabled:text-gray-500 tw-disabled:ring-gray-200 tw-sm:text-sm tw-leading-6',
+            'tw-block tw-w-full tw-rounded-md tw-border-0 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-gray-300 placeholder:tw-text-gray-400 focus:tw-ring-2 focus:tw-ring-inset focus:tw-ring-indigo-600 disabled:tw-cursor-not-allowed disabled:tw-bg-gray-50 disabled:tw-text-gray-500 disabled:tw-ring-gray-200 tw-leading-6',
           placeholder: attrs.placeholder || '',
         },
         []

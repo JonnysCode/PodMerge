@@ -2,7 +2,6 @@
 
 import './contentScript.css';
 import './main.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import { YjsStore } from './y/YjsStore.mjs';
 import { LDStore } from './LD/LDStore.js';
@@ -46,7 +45,7 @@ if (hasDesc && framework === 'Yjs') {
   );
 }
 
-document.getElementById('menu').classList.add('pb-12');
+document.getElementById('menu').classList.add('tw-pb-12');
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   switch (request.type) {
