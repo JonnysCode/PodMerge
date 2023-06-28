@@ -14,10 +14,10 @@ export const PropertySection = (id, property) => {
   return t.div(
     {
       id: id,
-      class: 'flex flex-col mt-4 gap-2',
+      class: 'tw-flex tw-flex-col tw-mt-4 tw-gap-2',
     },
     [
-      t.h3({ class: 'text-lg font-semibold  text-gray-800' }, [
+      t.h3({ class: 'tw-text-lg tw-font-semibold  tw-text-gray-800' }, [
         'Property "',
         property.name,
         '" context',
