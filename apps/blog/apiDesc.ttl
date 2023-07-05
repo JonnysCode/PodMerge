@@ -1,0 +1,78 @@
+@prefix : <#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@base <https://imp.inrupt.net/local-first/blog/index.html>.
+
+:description
+    a crdt:CollaborativeResourceDescription ;
+    crdt:title "A coffee blog";
+    crdt:description "A coffee blog with collaborative editing and linked data annotations";
+    crdt:created "2022-11-14T19:10:23.824Z" ;
+    crdt:modified "2023-06-01T09:12:43.124Z" ;
+    crdt:document :documentDesc;
+    crdt:textualRepresentation :textualRepresentationDesc.
+
+:documentDesc
+    a crdt:DocumentDescription;
+    crdt:framework crdt:Yjs ;
+    crdt:operation
+        [
+            a crdt:WebOperation ;
+            crdt:operationType crdt:Read ;
+            htcl:forContentType "application/octet-stream" ;
+            http:methodName "GET" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
+        ],
+        [
+            a crdt:WebOperation ;
+            crdt:operationType crdt:Update ;
+            htcl:forContentType "application/octet-stream" ;
+            http:methodName "PUT" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
+        ],
+        [
+            a crdt:FrameworkOperation ;
+            crdt:dependency crdt:Yjs, [ a crdt:FrameworkExtension; crdt:name "y-webrtc" ] ;
+            htcl:forSubProtocol "webrtc" ;
+            crdt:operationType crdt:Synchronize ;
+            crdt:syncMechanism crdt:WebRTC ;
+            crdt:withInput [
+                    a crdt:Input;
+                    crdt:name "name";
+                    rdf:value "coffeeBlog"^^xsd:string ;
+                    crdt:isRequired true
+                ],
+                [
+                    a crdt:Input;
+                    crdt:name "roomId";
+                    rdf:value "room-id-bv1823dg"^^xsd:string ;
+                    crdt:isRequired true
+                ],
+                [
+                    a crdt:Input;
+                    crdt:name "password";
+                    rdf:value "IUS3d7ezA)Sahsdi"^^xsd:string ;
+                    crdt:isRequired true
+                ];
+        ].
+
+:textualRepresentationDesc
+    a crdt:TextualRepresentationDescription;
+    crdt:operation
+        [
+            a crdt:WebOperation ;
+            crdt:operationType crdt:Read ;
+            htcl:forContentType "application/ld+json" ;
+            http:methodName "GET" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.json" ;
+        ],
+        [
+            a crdt:WebOperation ;
+            crdt:operationType crdt:Update ;
+            htcl:forContentType "application/ld+json" ;
+            http:methodName "PUT" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.json" ;
+        ] .
