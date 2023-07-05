@@ -4,9 +4,8 @@ export const Edit = () => {
   return s.svg(
     {
       xmlns: 'http://www.w3.org/2000/svg',
-      class: 'tw-h-6 tw-w-6 tw-text-white',
-      height: '1.8em',
-      viewBox: '0 0 512 512',
+      class: 'tw-h-6 tw-w-6 tw-ml-1 tw-my-0.5 tw-text-white',
+      viewBox: '0 0 576 512',
       fill: 'currentColor',
       'aria-hidden': 'true',
     },

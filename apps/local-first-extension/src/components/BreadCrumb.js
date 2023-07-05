@@ -3,7 +3,7 @@ import { File } from './icons/File';
 import { t } from './util';
 
 export const BreadCrumb = (id, path) => {
-  return t.nav({ id: id, class: 'tw-flex', 'aria-label': 'tw-Breadcrumb' }, [
+  return t.nav({ id: id, class: 'tw-flex', 'aria-label': 'Breadcrumb' }, [
     t.ol(
       {
         role: 'list',
@@ -16,7 +16,7 @@ export const BreadCrumb = (id, path) => {
               {
                 href: '#',
                 class:
-                  'tw-flex tw-flex-row tw-text-gray-400 hover:tw-text-gray-600',
+                  'tw-flex tw-flex-row tw-text-gray-600 hover:tw-text-gray-800',
               },
               [
                 t.span({ class: 'tw-text-sm tw-font-bold tw-mr-1' }, [
@@ -30,7 +30,7 @@ export const BreadCrumb = (id, path) => {
         ...path.map((item, index) => {
           const formattedItem = typeof item === 'number' ? `[${item}]` : item;
           return t.li({ key: index }, [
-            t.div({ class: 'tw-flex tw-items-center' }, [
+            t.div({ class: 'tw-flex tw-items-center tw-text-gray-400' }, [
               ChevronRight(),
               t.a(
                 {
