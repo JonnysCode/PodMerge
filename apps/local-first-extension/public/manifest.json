@@ -22,13 +22,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://*.inrupt.net/*"],
       "run_at": "document_idle",
       "js": ["contentScript.js"]
     }
   ],
   "web_accessible_resources": [
-    { "resources": ["/images/*"], "matches": ["https://*.inrupt.net/*"] },
-    { "resources": ["main.css"], "matches": ["https://*.inrupt.net/*"] }
+    { "resources": ["/images/*"], "matches": ["https://*.inrupt.net/*"] }
   ]
 }
