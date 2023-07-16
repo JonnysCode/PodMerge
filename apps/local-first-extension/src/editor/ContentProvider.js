@@ -5,7 +5,7 @@ import {
   dataPathToArray,
   dataPathToStringArray,
 } from './util';
-import { SidePanel } from './SidePanel';
+import { sidePanel } from './SidePanel';
 
 export class ContentProvider extends Observable {
   constructor(doc, dataAttribute = 'data-yjs') {
@@ -13,7 +13,7 @@ export class ContentProvider extends Observable {
 
     this.doc = doc;
     this.dataAttribute = dataAttribute;
-    this.sidePanel = new SidePanel();
+    this.sidePanel = sidePanel;
 
     this.render();
 

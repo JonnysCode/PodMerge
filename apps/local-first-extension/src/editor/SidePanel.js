@@ -5,17 +5,36 @@ import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
 import { FloatingButton } from '../components/FloatingButton';
 import { Edit } from '../components/icons/Edit';
+import { DisplayKeyValue } from '../components/DisplayKeyValue';
+import { PropertyContext } from '../components/PropertyContext';
 
 const breadCrumbId = 'bread-crumb';
 const propertySectionId = 'property-section';
 const valueSectionId = 'value-section';
 const floatingButtonId = 'floating-button';
 
-export class SidePanel extends Observable {
+const initProperty = {
+  name: 'articleBody',
+  context: [
+    {
+      key: '@id',
+      value: 'https://example.com/articleBody',
+      updating: false,
+    },
+    {
+      key: '@type',
+      value: '@id',
+      updating: true,
+    },
+  ],
+};
+
+class SidePanel extends Observable {
   constructor() {
     super();
 
     this.isOpen = false;
+    this.property = initProperty;
 
     this.els = {
       panelElement: null,
@@ -37,6 +56,12 @@ export class SidePanel extends Observable {
       console.log('SidePanel: update: ', path);
       this.render(path);
     });
+
+    this.on('updatePropertyOfIndex', (index) => {
+      console.log('SidePanel: updateProperty at ', index);
+      this.property.context[index].updating = true;
+      this.renderPropertySection();
+    });
   }
 
   _create() {
@@ -49,6 +74,7 @@ export class SidePanel extends Observable {
     this.els.panelElement.id = 'side-panel';
     document.body.appendChild(this.els.panelElement);
 
+    // Close button
     this.els.closeButton = document.createElement('button');
     this.els.closeButton.className = 'close-button';
     this.els.closeButton.textContent = 'Close';
@@ -58,12 +84,21 @@ export class SidePanel extends Observable {
     });
 
     this.renderBreadcrumb([]);
+    this.renderPropertySection();
 
+    /*
     this.els.propertySection = PropertySection('p');
     this.els.panelElement.appendChild(this.els.propertySection);
 
     this.els.valueSection = ValueSection('p[1]', 'crdt:Text');
     this.els.panelElement.appendChild(this.els.valueSection);
+
+    let display = DisplayKeyValue('p[2]', 'key', 'value');
+    this.els.panelElement.appendChild(display);
+
+    let context = PropertyContext();
+    this.els.panelElement.appendChild(context);
+    */
   }
 
   _createButton() {
@@ -83,6 +118,7 @@ export class SidePanel extends Observable {
 
   render(path) {
     this.renderBreadcrumb(path);
+    this.renderPropertySection(initProperty);
   }
 
   renderBreadcrumb(path) {
@@ -97,8 +133,8 @@ export class SidePanel extends Observable {
     }
   }
 
-  renderPropertySection(property) {
-    const propertySection = PropertySection(propertySectionId, property);
+  renderPropertySection() {
+    const propertySection = PropertyContext(propertySectionId, this.property);
     const existingPropertySection = document.getElementById(propertySectionId);
     if (existingPropertySection) {
       existingPropertySection.replaceWith(propertySection);
@@ -175,3 +211,5 @@ export class SidePanel extends Observable {
     });
   }
 }
+
+export const sidePanel = new SidePanel();

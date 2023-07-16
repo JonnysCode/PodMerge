@@ -6,11 +6,11 @@ export const TextInput = (id, label, value, attrs = {}) => {
       {
         for: id,
         class:
-          'tw-block tw-text-sm tw-font-medium tw-leading-6 tw-text-zinc-900',
+          'tw-block tw-ml-1 tw-text-sm tw-font-medium tw-leading-3 tw-text-zinc-900',
       },
       label
     ),
-    t.div({ class: 'tw-mt-2' }, [
+    t.div({ class: 'tw-mt-1' }, [
       t.input(
         {
           type: attrs.type || 'text',
