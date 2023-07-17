@@ -43,7 +43,7 @@ crdt:Value rdf:type rdfs:Datatype .
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#collaborationMechanism
 crdt:collaborationMechanism rdf:type owl:ObjectProperty ;
-                            rdfs:domain crdt:CollaborativeResourceDesc .
+                            rdfs:domain crdt:CollaborativeResourceDescription .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#dependency
@@ -53,17 +53,19 @@ crdt:dependency rdf:type owl:ObjectProperty ;
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#description
 crdt:description rdf:type owl:ObjectProperty ;
+                 rdfs:domain crdt:CollaborativeResourceDescription ,
+                             crdt:Description ;
                  rdfs:range crdt:Description .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#document
 crdt:document rdf:type owl:ObjectProperty ;
-              rdfs:domain crdt:CollaborativeResourceDesc .
+              rdfs:domain crdt:CollaborativeResourceDescription .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#framework
 crdt:framework rdf:type owl:ObjectProperty ;
-               rdfs:domain crdt:CollaborativeResourceDesc ;
+               rdfs:domain crdt:CollaborativeResourceDescription ;
                rdfs:range crdt:Framework .
 
 
@@ -92,7 +94,7 @@ crdt:syncMechanism rdf:type owl:ObjectProperty ;
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#textualRepresentation
 crdt:textualRepresentation rdf:type owl:ObjectProperty ;
-                           rdfs:domain crdt:CollaborativeResourceDesc .
+                           rdfs:domain crdt:CollaborativeResourceDescription .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#withInput
@@ -118,8 +120,6 @@ crdt:created rdf:type owl:DatatypeProperty ;
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#description
 crdt:description rdf:type owl:DatatypeProperty ;
-                 rdfs:domain crdt:CollaborativeResourceDesc ,
-                             crdt:Description ;
                  rdfs:range xsd:string .
 
 
@@ -155,7 +155,7 @@ crdt:name rdf:type owl:DatatypeProperty ;
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#title
 crdt:title rdf:type owl:DatatypeProperty ;
-           rdfs:domain crdt:CollaborativeResourceDesc ,
+           rdfs:domain crdt:CollaborativeResourceDescription ,
                        crdt:Description ;
            rdfs:range xsd:string .
 
@@ -173,11 +173,11 @@ hctl:hasTarget rdf:type owl:DatatypeProperty ;
 rdf:List rdf:type owl:Class .
 
 
-###  https://imp.inrupt.net/ontologies/crdt.ttl#CollaborativeResourceDesc
-crdt:CollaborativeResourceDesc rdf:type owl:Class ;
-                               rdfs:subClassOf crdt:Description ;
-                               rdfs:comment "A collaborative CRDT resource description" ;
-                               rdfs:label "Collaborative Resource Description" .
+###  https://imp.inrupt.net/ontologies/crdt.ttl#CollaborativeResourceDescription
+crdt:CollaborativeResourceDescription rdf:type owl:Class ;
+                                      rdfs:subClassOf crdt:Description ;
+                                      rdfs:comment "A collaborative CRDT resource description" ;
+                                      rdfs:label "Collaborative Resource Description" .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#Dependency
@@ -190,10 +190,10 @@ crdt:Description rdf:type owl:Class ;
                  rdfs:comment "The class of dereferenceable descriptions by means a client can attempt to dereference; however, the received responses should still be verified." .
 
 
-###  https://imp.inrupt.net/ontologies/crdt.ttl#DocumentDesc
-crdt:DocumentDesc rdf:type owl:Class ;
-                  rdfs:subClassOf crdt:Description ;
-                  rdfs:label "CRDT Document Description" .
+###  https://imp.inrupt.net/ontologies/crdt.ttl#DocumentDescription
+crdt:DocumentDescription rdf:type owl:Class ;
+                         rdfs:subClassOf crdt:Description ;
+                         rdfs:label "CRDT Document Description" .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#Framework
@@ -256,11 +256,11 @@ crdt:TextualRepresentation rdf:type owl:Class ;
                            rdfs:comment "A textual representation of a collaborative CRDT document. It is a textual snapshot of the CRDT state at the time it was last modified." .
 
 
-###  https://imp.inrupt.net/ontologies/crdt.ttl#TextualRepresentationDesc
-crdt:TextualRepresentationDesc rdf:type owl:Class ;
-                               rdfs:subClassOf crdt:Description ;
-                               rdfs:comment "A textual representation of the collaborative CRDT resource." ;
-                               rdfs:label "Textual CRDT Representation Description" .
+###  https://imp.inrupt.net/ontologies/crdt.ttl#TextualRepresentationDescription
+crdt:TextualRepresentationDescription rdf:type owl:Class ;
+                                      rdfs:subClassOf crdt:Description ;
+                                      rdfs:comment "A textual representation of the collaborative CRDT resource." ;
+                                      rdfs:label "Textual CRDT Representation Description" .
 
 
 ###  https://imp.inrupt.net/ontologies/crdt.ttl#WebOperation

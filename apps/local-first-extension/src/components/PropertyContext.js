@@ -18,9 +18,12 @@ export const PropertyContext = (id, property) => {
         'Property Context'
       ),
       t.p({ class: 'tw-mt-1 tw-text-sm tw-leading-6 tw-text-gray-500' }, [
-        'This is the property context of the ',
-        t.span({ class: 'tw-font-semibold' }, `"${property.name}"`),
-        '. You can update, add, and remove annotations or set a single IRI value.',
+        'This is the context of the ',
+        t.span(
+          { class: 'tw-font-semibold tw-text-gray-700' },
+          `"${property.name}"`
+        ),
+        ' property. You can update, add, and remove annotations or set a single IRI value.',
       ]),
       t.dl(
         {
@@ -39,8 +42,8 @@ export const PropertyContext = (id, property) => {
 
 const KeyValueItem = (key, value, index) => {
   const handleUpdate = () => {
-    console.log('handleUpdate: ', key, value, index);
-    sidePanel.emit('updatePropertyOfIndex', [index]);
+    console.log('handleEdit: ', key, value, index);
+    sidePanel.emit('editProperty', [index]);
   };
 
   return t.div({ class: 'tw-flex tw-flex-row tw-pt-3' }, [
@@ -70,6 +73,16 @@ const KeyValueItem = (key, value, index) => {
 };
 
 const UpdateKeyValueItem = (key, value, index) => {
+  const handleUpdate = () => {
+    console.log('handleUpdate: ', key, value, index);
+    sidePanel.emit('updateProperty', [index]);
+  };
+
+  const handleDelete = () => {
+    console.log('handleDelete: ', key, value, index);
+    sidePanel.emit('deleteProperty', [index]);
+  };
+
   return t.div({ class: 'tw-flex tw-flex-row tw-pt-3 tw-space-x-6' }, [
     t.div({ class: 'tw-flex tw-flex-col tw-grow tw-space-y-2' }, [
       TextInput('update-property', 'Property', key),
@@ -81,6 +94,7 @@ const UpdateKeyValueItem = (key, value, index) => {
           type: 'button',
           class:
             'tw-rounded-full tw-bg-gray-500 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-gray-400 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-gray-500',
+          click: handleDelete,
         },
         Trash('tw-h-4 tw-w-4')
       ),
@@ -89,6 +103,7 @@ const UpdateKeyValueItem = (key, value, index) => {
           type: 'button',
           class:
             'tw-rounded-full tw-bg-indigo-600 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-indigo-500 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-indigo-600',
+          click: handleUpdate,
         },
         Check('tw-h-4 tw-w-4')
       ),

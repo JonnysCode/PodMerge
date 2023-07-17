@@ -3,13 +3,25 @@ import { SyncedMap, getYjsValue } from '@syncedstore/core';
 
 export const CONSTRUCTOR_KEY = Symbol();
 
+const EXTENDED_TERM_DEFINITION_KEYS = [
+  '@id',
+  '@type',
+  '@container',
+  '@reverse',
+  '@language',
+  '@context',
+  '@prefix',
+  '@propagate',
+  '@protected',
+];
+
 export class JsonLD {
   /**
    *
    * @param {Object} jsonld
    * @param {Symbol} constructorKey
    * @param {string || null} rootProperty
-   * @param {boolean} useProxy Allows to call "['@keyword']" directly using dot notation ".keyword"
+   * @param {boolean} useProxy Allows to call "['@keyword']" directly using dot notation "data.keyword"
    */
   constructor(jsonld, constructorKey, rootProperty = null, useProxy = false) {
     if (constructorKey !== CONSTRUCTOR_KEY) {
@@ -75,30 +87,15 @@ export class JsonLD {
     return this.rootProperty ? this.data[this.rootProperty] : this.data;
   }
 
-  getContext(target = this.root) {
-    if (containsProperty(target, '@context')) {
-      return target['@context'];
-    }
-
-    return null;
-  }
-
-  getId(target = this.root) {
-    return target['@id'];
-  }
-
-  getType(target = this.root) {
-    return target['@type'];
+  get context() {
+    return this.root['@context'];
   }
 
   /**Returns the target and property of a given path in the data.
    * If the path is a string, it will be split by '.'.
    *
    * Example:
-   *    const data = {
-   *      foo: {
-   *      bar: 'baz'
-   *    }
+   *    const data = { foo: { bar: 'baz' } }
    *    getTargetAndProp('foo.bar') // { target: { bar: 'baz' }, prop: 'bar' }
    *
    * @param {*} path
@@ -119,28 +116,68 @@ export class JsonLD {
     return { target, prop };
   }
 
-  getPropertyDesc(path, delimiter = '.') {
-    let properties = path.split(delimiter);
+  /** Returns the property description of a given path in the data.
+   *
+   * @param {*} path
+   * @returns { path, name, context }
+   */
+  getPropertyDescription(path, delimiter = '.') {
+    if (typeof path === 'string') {
+      path = path.split(delimiter);
+    }
+    const propertyPath = [...path];
 
-    // get last element in properties that is not numeric
-    let property = properties.pop();
+    // get last element in properties that is not numeric -> assuming these are array indices
+    let property = propertyPath.pop();
     while (isNumeric(property)) {
-      property = properties.pop();
+      property = propertyPath.pop();
+    }
+
+    let termDefinition = this.getTermDefinition(property);
+    if (typeof termDefinition === 'object') {
+      termDefinition = Object.entries(termDefinition).map(([key, value]) => {
+        return { term: key, definition: value, updating: false };
+      });
     }
 
     return {
+      name: property,
       path: path,
-      property: property,
-      context: this.getPropertyContext(property),
+      isSimpleTermDefinition: typeof termDefinition === 'string',
+      termDefinition: termDefinition,
     };
   }
 
-  getPropertyContext(property) {
-    let context = this.getContext();
-
-    if (containsProperty(context, property)) {
-      return context[property];
+  getTermDefinition(term) {
+    if (containsProperty(this.context, term)) {
+      return this.context[term];
     }
+
+    return null;
+  }
+
+  addSimpleTermDefinition(term, definition) {
+    if (this.isCompactIri(definition)) {
+      this.addVocabToContext(this.getPrefix(definition));
+    }
+    this.context[term] = definition;
+  }
+
+  addExtendedTermDefinition(term, key, definition) {
+    if (!key in EXTENDED_TERM_DEFINITION_KEYS) {
+      throw new Error('Invalid key for extended term definition');
+    }
+
+    let currentDefinition = this.getTermDefinition(term);
+    if (!currentDefinition || typeof currentDefinition !== 'object') {
+      this.context[term] = new SyncedMap();
+    }
+
+    if (this.isCompactIri(definition)) {
+      this.addVocabToContext(this.getPrefix(definition));
+    }
+
+    this.context[term][key] = definition;
   }
 
   /**
@@ -246,12 +283,7 @@ export class JsonLD {
       vocab = ontologies[prefix];
     }
 
-    this.addContext(prefix, vocab);
-  }
-
-  addContext(key, value) {
-    // TODO: If the value is an object, create SyncedMap
-    this.root['@context'][key] = value;
+    this.root['@context'][property] = vocab;
   }
 
   prefixInContext(prefix) {
@@ -277,16 +309,6 @@ export class JsonLD {
   addPropertyFromPath(path, property, value) {
     let { target, prop } = this.getTargetAndProp(path);
     this.addProperty(target, prop, property, value);
-  }
-
-  addPropertyWithContext(target, prop, property, value, context) {
-    this.addContext(property, context);
-    this.addProperty(target, prop, property, value);
-  }
-
-  addPropertyWithContextFromPath(path, property, value, context) {
-    let { target, prop } = this.getTargetAndProp(path);
-    this.addPropertyWithContext(target, prop, property, value, context);
   }
 
   isRoot(target, prop = null) {

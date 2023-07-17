@@ -18,7 +18,6 @@ export class ContentProvider extends Observable {
     this.render();
 
     this.on('doc-update', (newDoc) => {
-      console.log('Content.js: doc-update: ', newDoc);
       this.doc = newDoc;
       this.render();
     });
@@ -63,6 +62,9 @@ export class ContentProvider extends Observable {
   handleClick(event) {
     const element = event.target;
     const path = this.dataPathFor(element);
+
+    const property = this.doc.getPropertyDescription(path);
+    console.log('property: ', property);
 
     this.sidePanel.open();
     this.sidePanel.emit('update', [path]);

@@ -3,6 +3,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix http: <http://www.w3.org/2011/http#>.
+@prefix htcl: <https://www.w3.org/2019/wot/hypermedia#>.
 
 @base <https://imp.inrupt.net/local-first/blog/index.html>.
 
@@ -12,10 +14,10 @@
     crdt:description "A coffee blog with collaborative editing and linked data annotations";
     crdt:created "2022-11-14T19:10:23.824Z" ;
     crdt:modified "2023-06-01T09:12:43.124Z" ;
-    crdt:document :documentDesc;
-    crdt:textualRepresentation :textualRepresentationDesc.
+    crdt:document :document;
+    crdt:textualRepresentation :textualRepresentation.
 
-:documentDesc
+:document
     a crdt:DocumentDescription;
     crdt:framework crdt:Yjs ;
     crdt:operation
@@ -36,7 +38,6 @@
         [
             a crdt:FrameworkOperation ;
             crdt:dependency crdt:Yjs, [ a crdt:FrameworkExtension; crdt:name "y-webrtc" ] ;
-            htcl:forSubProtocol "webrtc" ;
             crdt:operationType crdt:Synchronize ;
             crdt:syncMechanism crdt:WebRTC ;
             crdt:withInput [
@@ -59,7 +60,7 @@
                 ];
         ].
 
-:textualRepresentationDesc
+:textualRepresentation
     a crdt:TextualRepresentationDescription;
     crdt:operation
         [
@@ -67,12 +68,12 @@
             crdt:operationType crdt:Read ;
             htcl:forContentType "application/ld+json" ;
             http:methodName "GET" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.json" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
         ],
         [
             a crdt:WebOperation ;
             crdt:operationType crdt:Update ;
             htcl:forContentType "application/ld+json" ;
             http:methodName "PUT" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.json" ;
+            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
         ] .

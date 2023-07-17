@@ -1,11 +1,9 @@
 import '../contentScript.css';
 import { Observable } from 'lib0/observable';
-import { PropertySection } from '../components/PropertySection';
 import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
 import { FloatingButton } from '../components/FloatingButton';
 import { Edit } from '../components/icons/Edit';
-import { DisplayKeyValue } from '../components/DisplayKeyValue';
 import { PropertyContext } from '../components/PropertyContext';
 
 const breadCrumbId = 'bread-crumb';
@@ -57,9 +55,23 @@ class SidePanel extends Observable {
       this.render(path);
     });
 
-    this.on('updatePropertyOfIndex', (index) => {
-      console.log('SidePanel: updateProperty at ', index);
+    this.on('editProperty', (index) => {
+      console.log('SidePanel: editProperty at ', index);
       this.property.context[index].updating = true;
+      this.renderPropertySection();
+    });
+
+    this.on('updateProperty', (index) => {
+      console.log('SidePanel: updateProperty at ', index);
+      this.property.context[index].updating = false;
+      // update JSON-LD
+      this.renderPropertySection();
+    });
+
+    this.on('deleteProperty', (index) => {
+      console.log('SidePanel: deleteProperty at ', index);
+      this.property.context[index].updating = false;
+      // update JSON-LD
       this.renderPropertySection();
     });
   }
