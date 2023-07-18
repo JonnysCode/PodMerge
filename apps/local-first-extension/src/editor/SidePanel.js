@@ -4,16 +4,18 @@ import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
 import { FloatingButton } from '../components/FloatingButton';
 import { Edit } from '../components/icons/Edit';
-import { PropertyContext } from '../components/PropertyContext';
+import { TermDefinition } from '../components/TermDefinition';
 
 const breadCrumbId = 'bread-crumb';
-const propertySectionId = 'property-section';
+const termDefinitionId = 'property-section';
 const valueSectionId = 'value-section';
 const floatingButtonId = 'floating-button';
 
 const initProperty = {
   name: 'articleBody',
-  context: [
+  path: ['about', 'p', '[1]'],
+  isExpandedTermDefinition: true,
+  termDefinition: [
     {
       key: '@id',
       value: 'https://example.com/articleBody',
@@ -22,7 +24,7 @@ const initProperty = {
     {
       key: '@type',
       value: '@id',
-      updating: true,
+      updating: false,
     },
   ],
 };
@@ -57,22 +59,28 @@ class SidePanel extends Observable {
 
     this.on('editProperty', (index) => {
       console.log('SidePanel: editProperty at ', index);
-      this.property.context[index].updating = true;
-      this.renderPropertySection();
+      this.property.termDefinition[index].updating = true;
+      this.renderTermDefinition();
     });
 
     this.on('updateProperty', (index) => {
       console.log('SidePanel: updateProperty at ', index);
-      this.property.context[index].updating = false;
+      this.property.termDefinition[index].updating = false;
       // update JSON-LD
-      this.renderPropertySection();
+      this.renderTermDefinition();
+    });
+
+    this.on('updateTermDefinition', (property) => {
+      console.log('SidePanel: updateTermDefinition ');
+      this.property = property;
+      this.renderTermDefinition();
     });
 
     this.on('deleteProperty', (index) => {
       console.log('SidePanel: deleteProperty at ', index);
-      this.property.context[index].updating = false;
+      this.property.termDefinition[index].updating = false;
       // update JSON-LD
-      this.renderPropertySection();
+      this.renderTermDefinition();
     });
   }
 
@@ -96,7 +104,7 @@ class SidePanel extends Observable {
     });
 
     this.renderBreadcrumb([]);
-    this.renderPropertySection();
+    this.renderTermDefinition();
 
     /*
     this.els.propertySection = PropertySection('p');
@@ -130,7 +138,7 @@ class SidePanel extends Observable {
 
   render(path) {
     this.renderBreadcrumb(path);
-    this.renderPropertySection(initProperty);
+    this.renderTermDefinition(initProperty);
   }
 
   renderBreadcrumb(path) {
@@ -145,13 +153,13 @@ class SidePanel extends Observable {
     }
   }
 
-  renderPropertySection() {
-    const propertySection = PropertyContext(propertySectionId, this.property);
-    const existingPropertySection = document.getElementById(propertySectionId);
+  renderTermDefinition() {
+    const termDefinition = TermDefinition(termDefinitionId, this.property);
+    const existingPropertySection = document.getElementById(termDefinitionId);
     if (existingPropertySection) {
-      existingPropertySection.replaceWith(propertySection);
+      existingPropertySection.replaceWith(termDefinition);
     } else {
-      this.els.panelElement.appendChild(propertySection);
+      this.els.panelElement.appendChild(termDefinition);
     }
   }
 

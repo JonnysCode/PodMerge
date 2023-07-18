@@ -134,7 +134,10 @@ export class JsonLD {
     }
 
     let termDefinition = this.getTermDefinition(property);
-    if (typeof termDefinition === 'object') {
+    let isExpandedTermDefinition = false;
+    console.log('termDefinition: ', termDefinition);
+    if (termDefinition && typeof termDefinition === 'object') {
+      isExpandedTermDefinition = true;
       termDefinition = Object.entries(termDefinition).map(([key, value]) => {
         return { term: key, definition: value, updating: false };
       });
@@ -143,7 +146,7 @@ export class JsonLD {
     return {
       name: property,
       path: path,
-      isSimpleTermDefinition: typeof termDefinition === 'string',
+      isExpandedTermDefinition: isExpandedTermDefinition,
       termDefinition: termDefinition,
     };
   }
