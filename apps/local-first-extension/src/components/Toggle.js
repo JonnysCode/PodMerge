@@ -1,6 +1,6 @@
 import { t } from './util';
 
-const enabledBg = 'tw-bg-indigo-600';
+const enabledBg = 'tw-bg-emerald-600';
 const disabledBg = 'tw-bg-gray-200';
 const enabledTranslate = 'tw-translate-x-5';
 const disabledTranslate = 'tw-translate-x-0';
@@ -8,7 +8,7 @@ const disabledTranslate = 'tw-translate-x-0';
 const buttonClass = (enabled) =>
   `${
     enabled ? enabledBg : disabledBg
-  } tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 tw-ease-in-out focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-indigo-600 focus:tw-ring-offset-2`;
+  } tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 tw-ease-in-out focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-emerald-600 focus:tw-ring-offset-2`;
 
 const toggleClass = (enabled) =>
   `${
@@ -21,7 +21,7 @@ export const Toggle = (id, enabled, handleClick) => {
       id: id,
       type: 'button',
       class:
-        'tw-bg-gray-200 tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 tw-ease-in-out focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-indigo-600 focus:tw-ring-offset-2',
+        'tw-bg-gray-200 tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 tw-ease-in-out focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-emerald-600 focus:tw-ring-offset-2',
       role: 'switch',
       'aria-checked': 'false',
       click: handleClick,

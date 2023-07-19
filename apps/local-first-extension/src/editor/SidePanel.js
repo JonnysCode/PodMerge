@@ -1,14 +1,13 @@
 import '../contentScript.css';
 import { Observable } from 'lib0/observable';
-import { ValueSection } from '../components/ValueSection';
 import { BreadCrumb } from '../components/BreadCrumb';
 import { FloatingButton } from '../components/FloatingButton';
 import { Edit } from '../components/icons/Edit';
 import { TermDefinition } from '../components/TermDefinition';
+import { Header } from '../components/Header';
 
 const breadCrumbId = 'bread-crumb';
 const termDefinitionId = 'property-section';
-const valueSectionId = 'value-section';
 const floatingButtonId = 'floating-button';
 
 const initProperty = {
@@ -94,31 +93,11 @@ class SidePanel extends Observable {
     this.els.panelElement.id = 'side-panel';
     document.body.appendChild(this.els.panelElement);
 
-    // Close button
-    this.els.closeButton = document.createElement('button');
-    this.els.closeButton.className = 'close-button';
-    this.els.closeButton.textContent = 'Close';
-    this.els.panelElement.appendChild(this.els.closeButton);
-    this.els.closeButton.addEventListener('click', () => {
-      this.toggle();
-    });
+    let header = Header('header');
+    this.els.panelElement.appendChild(header);
 
     this.renderBreadcrumb([]);
     this.renderTermDefinition();
-
-    /*
-    this.els.propertySection = PropertySection('p');
-    this.els.panelElement.appendChild(this.els.propertySection);
-
-    this.els.valueSection = ValueSection('p[1]', 'crdt:Text');
-    this.els.panelElement.appendChild(this.els.valueSection);
-
-    let display = DisplayKeyValue('p[2]', 'key', 'value');
-    this.els.panelElement.appendChild(display);
-
-    let context = PropertyContext();
-    this.els.panelElement.appendChild(context);
-    */
   }
 
   _createButton() {
@@ -126,12 +105,9 @@ class SidePanel extends Observable {
       floatingButtonId,
       [Edit('2em')],
       () => {
-        console.log('floatingButton: click');
         this.toggle();
       }
     );
-
-    console.log('this.els.floatingButton: ', this.els.floatingButton);
 
     document.body.appendChild(this.els.floatingButton);
   }
@@ -160,16 +136,6 @@ class SidePanel extends Observable {
       existingPropertySection.replaceWith(termDefinition);
     } else {
       this.els.panelElement.appendChild(termDefinition);
-    }
-  }
-
-  renderValueSection(value) {
-    const valueSection = ValueSection(valueSectionId, value);
-    const existingValueSection = document.getElementById(valueSectionId);
-    if (existingValueSection) {
-      existingValueSection.replaceWith(valueSection);
-    } else {
-      this.els.panelElement.appendChild(valueSection);
     }
   }
 
@@ -203,32 +169,6 @@ class SidePanel extends Observable {
     this.els.floatingButton.style.display = 'block';
     document.body.classList.remove('side-panel-open');
     this.isOpen = false;
-  }
-
-  addKeyValuePair() {
-    const pair = document.createElement('li');
-    pair.className = 'pair';
-
-    const keyInput = document.createElement('input');
-    keyInput.type = 'text';
-    keyInput.placeholder = 'Key';
-    pair.appendChild(keyInput);
-
-    const valueInput = document.createElement('input');
-    valueInput.type = 'text';
-    valueInput.placeholder = 'Value';
-    pair.appendChild(valueInput);
-
-    const removeButton = document.createElement('button');
-    removeButton.className = 'remove-button';
-    removeButton.textContent = 'Remove';
-    pair.appendChild(removeButton);
-
-    this.els.pairsList.appendChild(pair);
-
-    removeButton.addEventListener('click', () => {
-      pair.remove();
-    });
   }
 }
 

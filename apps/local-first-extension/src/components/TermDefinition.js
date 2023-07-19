@@ -49,7 +49,7 @@ const SimpleTermDefinition = (id, property) => {
         t.button(
           {
             class:
-              'tw-py-1 tw-basis-1/2 tw-text-indigo-600 tw-border-2 tw-border-indigo-600 tw-rounded-lg tw-mt-3',
+              'tw-py-1 tw-basis-1/2 tw-text-emerald-600 tw-border-2 tw-border-emerald-600 tw-rounded-lg tw-mt-3',
           },
           'Simple'
         ),
@@ -111,7 +111,7 @@ const ExtendedTermDefinition = (id, property) => {
         t.button(
           {
             class:
-              'tw-py-1 tw-basis-1/2 tw-text-indigo-600 tw-border-2 tw-border-indigo-600 tw-rounded-lg tw-mt-3',
+              'tw-py-1 tw-basis-1/2 tw-text-emerald-600 tw-border-2 tw-border-emerald-600 tw-rounded-lg tw-mt-3',
           },
           'Extended'
         ),
@@ -143,7 +143,7 @@ const ExtendedTermDefinition = (id, property) => {
           },
           [
             Plus(
-              'tw-w-7 tw-h-7 tw-mr-2 tw-text-indigo-600 hover:tw-text-indigo-500'
+              'tw-w-7 tw-h-7 tw-mr-2 tw-text-emerald-600 hover:tw-text-emerald-500'
             ),
             'Add entry',
           ]
@@ -177,7 +177,7 @@ const KeyValueItem = (key, value, index) => {
     t.button(
       {
         type: 'button',
-        class: 'tw-font-semibold tw-text-indigo-600 hover:tw-text-indigo-500',
+        class: 'tw-font-semibold tw-text-emerald-600 hover:tw-text-emerald-500',
         click: handleUpdate,
       },
       'Update'
@@ -211,7 +211,7 @@ const ValueItem = (property) => {
     t.button(
       {
         type: 'button',
-        class: 'tw-font-semibold tw-text-indigo-600 hover:tw-text-indigo-500',
+        class: 'tw-font-semibold tw-text-emerald-600 hover:tw-text-emerald-500',
         click: handleUpdate,
       },
       'Update'
@@ -258,7 +258,7 @@ const UpdateKeyValueItem = (property, index) => {
         {
           type: 'button',
           class:
-            'tw-rounded-full tw-bg-indigo-600 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-indigo-500 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-indigo-600',
+            'tw-rounded-full tw-bg-emerald-600 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-emerald-500 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-emerald-600',
           click: handleUpdate,
         },
         Check('tw-h-4 tw-w-4')
@@ -287,7 +287,7 @@ const UpdateValueItem = (property) => {
         {
           type: 'button',
           class:
-            'tw-rounded-full tw-bg-indigo-600 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-indigo-500 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-indigo-600',
+            'tw-rounded-full tw-bg-emerald-600 tw-p-1.5 tw-text-white tw-shadow-sm hover:tw-bg-emerald-500 focus-visible:tw-outline focus-visible:tw-outline-2 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-emerald-600',
           click: handleUpdate,
         },
         Check('tw-h-4 tw-w-4')
