@@ -6,34 +6,34 @@ import context from './data/context.json';
 import { constructRequest } from '../solid/fetch';
 
 export class LDStore {
-  constructor(entryPath, nodeName = '#API') {
+  constructor(entryPath, nodeName = '#description') {
     this.entryPath = entryPath;
     this.nodeName = nodeName;
     this.queryEngine = new ComunicaEngine(entryPath);
     this.path = new PathFactory({ context, queryEngine: this.queryEngine });
 
-    this.api = this.path.create({
+    this.description = this.path.create({
       subject: namedNode(entryPath + nodeName),
     });
 
-    this.docState = this.path.create({
-      subject: namedNode(entryPath + '#docState'),
+    this.document = this.path.create({
+      subject: namedNode(entryPath + '#document'), // discover at run-time
     });
 
     this.representation = this.path.create({
-      subject: namedNode(entryPath + '#hrState'),
+      subject: namedNode(entryPath + '#textualRepresentation'), // discover at run-time
     });
   }
 
   async isCollaborativeResource() {
     const isDesc =
-      iriName(await this.api.type.value) === 'CollaborativeResourceDesc';
-    console.log('isDesc: ', isDesc);
+      iriName(await this.description.type.value) ===
+      'CollaborativeResourceDescription';
     return isDesc;
   }
 
   async log() {
-    const docState = await this.docState.type.value;
+    const docState = await this.document.type.value;
     const representation = await this.representation.type.value;
 
     console.log('DocState: ', docState);
@@ -41,11 +41,11 @@ export class LDStore {
   }
 
   async getFramework() {
-    return iriName(await this.docState.framework.value);
+    return iriName(await this.document.framework.value);
   }
 
   async getDocument() {
-    const operation = await getOperationByType(this.docState, 'Read');
+    const operation = await getOperationByType(this.document, 'Read');
     await logOperation(operation);
     const result = await this.invokeOperation(operation);
 
@@ -53,15 +53,15 @@ export class LDStore {
   }
 
   async saveDocument(document) {
-    const operation = await getOperationByType(this.docState, 'Update');
+    const operation = await getOperationByType(this.document, 'Update');
 
-    const format = await this.docState.format.value;
+    const format = await operation.contentType.value;
 
     const header = {
       'Content-Type': format,
     };
 
-    console.log('Header: ', header);
+    console.log('Save document Header: ', header);
 
     await logOperation(operation);
     return await this.invokeOperation(operation, header, document);
@@ -69,15 +69,15 @@ export class LDStore {
 
   async saveJSON(json) {
     const operation = await getOperationByType(
-      this.api.representation,
+      this.description.representation,
       'Update'
     );
 
     const header = {
-      'Content-Type': 'application/json',
+      'Content-Type': await operation.contentType.value,
     };
 
-    console.log('Header: ', header);
+    console.log('Save JSON header: ', header);
 
     await logOperation(operation);
     return await this.invokeOperation(operation, header, json);
@@ -87,20 +87,20 @@ export class LDStore {
     const operationName = iriName(await operation.type.value);
 
     switch (operationName) {
-      case 'HttpOperation':
-        return this.httpOperation(operation, header, body);
+      case 'WebOperation':
+        return this.webOperation(operation, header, body);
       case 'FrameworkOperation':
         return this.frameworkOperation(operation, header, body);
-      case 'WorkspaceOperation':
-        return this.workspaceOperation(operation, header, body);
       default:
         throw new Error(`Unknown operation: ${operationName}`);
     }
   }
 
-  async httpOperation(operation, header, body) {
+  async webOperation(operation, header, body) {
     const href = await operation.href.value;
     const method = await operation.method.value;
+
+    console.log('Web operation: ', href, method, header, body);
 
     const response = await constructRequest(href, method, header, body);
     console.log('Response: ', response);
@@ -118,16 +118,6 @@ export class LDStore {
     // There should be an implementation by the frameworks that provides a uniform interface.
     // It should be simple for the client to invoke the operation based on the metadata from
     // the CRDT ontology.
-  }
-
-  async workspaceOperation(operation, header, body) {
-    // TODO: Implement workspace operations
-    console.log(
-      '[LdCrdt] Workspace operation: ',
-      await operation.operationType.value
-    );
-
-    // WorkspaceOperations are Solid data pod specific operations.
   }
 }
 

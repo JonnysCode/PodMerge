@@ -66,7 +66,6 @@ export class ContentProvider extends Observable {
     const property = this.doc.getPropertyDescription(path);
     console.log('property: ', property);
 
-    this.sidePanel.open();
     this.sidePanel.emit('update', [path]);
   }
 

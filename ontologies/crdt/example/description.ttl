@@ -4,7 +4,7 @@
 @prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix http: <http://www.w3.org/2011/http#>.
-@prefix htcl: <https://www.w3.org/2019/wot/hypermedia#>.
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#>.
 
 @base <https://imp.inrupt.net/local-first/blog/index.html>.
 
@@ -24,16 +24,16 @@
         [
             a crdt:WebOperation ;
             crdt:operationType crdt:Read ;
-            htcl:forContentType "application/octet-stream" ;
+            hctl:forContentType "application/octet-stream" ;
             http:methodName "GET" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
+            hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
         ],
         [
             a crdt:WebOperation ;
             crdt:operationType crdt:Update ;
-            htcl:forContentType "application/octet-stream" ;
+            hctl:forContentType "application/octet-stream" ;
             http:methodName "PUT" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
+            hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
         ],
         [
             a crdt:FrameworkOperation ;
@@ -66,14 +66,14 @@
         [
             a crdt:WebOperation ;
             crdt:operationType crdt:Read ;
-            htcl:forContentType "application/ld+json" ;
+            hctl:forContentType "application/ld+json" ;
             http:methodName "GET" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
+            hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
         ],
         [
             a crdt:WebOperation ;
             crdt:operationType crdt:Update ;
-            htcl:forContentType "application/ld+json" ;
+            hctl:forContentType "application/ld+json" ;
             http:methodName "PUT" ;
-            htcl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
+            hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
         ] .

@@ -3,12 +3,17 @@ import { Check } from './icons/Check';
 import { Trash } from './icons/Trash';
 import { sidePanel } from '../editor/SidePanel';
 import { t } from './util';
-import { Toggle } from './Toggle';
 import { Plus } from './icons/Plus';
 
 const render = (property) => {
   sidePanel.emit('updateTermDefinition', [property]);
 };
+
+const updateSimpleTermDefinition = (value) => {};
+
+const updateExtendedTermDefinition = (key, value) => {};
+
+const removeExtendedTermDefinition = (key) => {};
 
 export const TermDefinition = (id, property) => {
   return t.div(

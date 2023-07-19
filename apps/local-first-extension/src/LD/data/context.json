@@ -21,6 +21,8 @@
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "crdt": "https://imp.inrupt.net/ontologies/crdt.ttl#",
     "lf": "https://imp.inrupt.net/local-first/blog/context.ttl#",
+    "hctl": "https://www.w3.org/2019/wot/hypermedia#",
+    "http": "http://www.w3.org/2011/http#",
 
     "accessControl": "acl:accessControl",
     "accessTo": "acl:accessTo",
@@ -127,16 +129,17 @@
 
     "framework": "crdt:framework",
     "document": "crdt:document",
-    "format": "crdt:format",
     "operation": "crdt:operation",
     "operations": "crdt:operations",
     "operationType": "crdt:operationType",
-    "method": "crdt:method",
-    "href": "crdt:href",
     "realTimeConnection": "crdt:realTimeConnection",
     "dependency": "crdt:dependency",
     "requiredInput": "crdt:requiredInput",
     "dataSchema": "crdt:dataSchema",
-    "representation": "crdt:representation"
+    "representation": "crdt:representation",
+
+    "method": "http:methodName",
+    "href": "hctl:hasTarget",
+    "contentType": "hctl:forContentType"
   }
 }
