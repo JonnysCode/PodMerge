@@ -10,6 +10,7 @@ import { sendGlobalMessage } from './util.js';
 import { ContentProvider } from './editor/ContentProvider.js';
 import { YjsContentProvider } from './y/YjsContentProvider.js';
 import { SyncedJsonLD } from './y/SyncedJsonLD.mjs';
+import { WebrtcProvider } from 'y-webrtc';
 
 const currentPageUrl = window.location.href;
 const baseUrl = currentPageUrl.substring(
@@ -27,23 +28,18 @@ let contentProvider = null;
 const ldStore = new LDStore(baseUrl + 'context.ttl');
 
 const hasDesc = await ldStore.isCollaborativeResource();
-
 const framework = await ldStore.getFramework();
 console.log('Framework: ', framework);
 
+/*
 if (hasDesc && framework === 'Yjs') {
-  console.log('Collaborative Yjs resource');
-
   console.log('Init from JSON...');
   let json = await getJSON(jsonUrl);
   jsonld = SyncedJsonLD.fromJson(json, jsonUrl);
 
-  contentProvider = new YjsContentProvider(
-    jsonld,
-    'data-yjs',
-    jsonld.rootProperty
-  );
+  contentProvider = new YjsContentProvider(jsonld);
 }
+*/
 
 document.getElementById('menu').classList.add('tw-pb-12');
 
@@ -53,7 +49,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       session = await loginSolid();
       break;
     case 'EDIT':
-      initFromState();
+      //initFromState();
+      initFromJson();
       break;
     case 'SYNC':
       initSync();
@@ -107,14 +104,8 @@ async function initFromJson() {
   let json = await getJSON(jsonUrl);
 
   if (framework === 'Yjs') {
-    //store = YjsStore.fromJson(baseUrl, json);
     jsonld = SyncedJsonLD.fromJson(json, jsonUrl);
-    console.log('Data: ', jsonld.toJsonLd());
-    contentProvider = new YjsContentProvider(
-      jsonld,
-      'data-yjs',
-      jsonld.rootProperty
-    );
+    contentProvider = new YjsContentProvider(jsonld);
   } else if (framework === 'Automerge') {
     const response = await sendGlobalMessage('INIT', {
       name: baseUrl,
@@ -132,7 +123,10 @@ async function initSync() {
   //docState = await ldStore.getDocument();
 
   if (framework === 'Yjs') {
-    store.initWebrtcProvider();
+    //store.initWebrtcProvider();
+    new WebrtcProvider('demo', jsonld.doc, {
+      signaling: ['ws://localhost:4444'],
+    });
   } else if (framework === 'Automerge') {
     console.log('Currently no sync for Automerge');
   }

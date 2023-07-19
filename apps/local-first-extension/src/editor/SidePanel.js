@@ -35,38 +35,12 @@ class SidePanel extends Observable {
     this.isOpen = false;
     this.property = initProperty;
 
-    this.els = {
-      panelElement: null,
-      addButton: null,
-      closeButton: null,
-      typeInput: null,
-      typeLabel: null,
-      pairsList: null,
-      floatingButton: null,
-      titleElement: null,
-      propertySection: null,
-      valueSection: null,
-      breadCrumb: null,
-    };
-
-    this._create();
+    this.panelElement = null;
+    this.floatingButton = null;
 
     this.on('update', (path) => {
       console.log('SidePanel: update: ', path);
       this.render(path);
-    });
-
-    this.on('editProperty', (index) => {
-      console.log('SidePanel: editProperty at ', index);
-      this.property.termDefinition[index].updating = true;
-      this.renderTermDefinition();
-    });
-
-    this.on('updateProperty', (index) => {
-      console.log('SidePanel: updateProperty at ', index);
-      this.property.termDefinition[index].updating = false;
-      // update JSON-LD
-      this.renderTermDefinition();
     });
 
     this.on('updateTermDefinition', (property) => {
@@ -74,34 +48,27 @@ class SidePanel extends Observable {
       this.property = property;
       this.renderTermDefinition();
     });
-
-    this.on('deleteProperty', (index) => {
-      console.log('SidePanel: deleteProperty at ', index);
-      this.property.termDefinition[index].updating = false;
-      // update JSON-LD
-      this.renderTermDefinition();
-    });
   }
 
-  _create() {
+  init() {
     this._createButton();
     this._createPanel();
   }
 
   _createPanel() {
-    this.els.panelElement = document.createElement('div');
-    this.els.panelElement.id = 'side-panel';
-    document.body.appendChild(this.els.panelElement);
+    this.panelElement = document.createElement('div');
+    this.panelElement.id = 'side-panel';
+    document.body.appendChild(this.panelElement);
 
     let header = Header('header');
-    this.els.panelElement.appendChild(header);
+    this.panelElement.appendChild(header);
 
     this.renderBreadcrumb([]);
     this.renderTermDefinition();
   }
 
   _createButton() {
-    this.els.floatingButton = FloatingButton(
+    this.floatingButton = FloatingButton(
       floatingButtonId,
       [Edit('2em')],
       () => {
@@ -109,7 +76,7 @@ class SidePanel extends Observable {
       }
     );
 
-    document.body.appendChild(this.els.floatingButton);
+    document.body.appendChild(this.floatingButton);
   }
 
   render(path) {
@@ -125,7 +92,7 @@ class SidePanel extends Observable {
     if (existingBreadCrumb) {
       existingBreadCrumb.replaceWith(breadCrumb);
     } else {
-      this.els.panelElement.appendChild(breadCrumb);
+      this.panelElement.appendChild(breadCrumb);
     }
   }
 
@@ -135,12 +102,8 @@ class SidePanel extends Observable {
     if (existingPropertySection) {
       existingPropertySection.replaceWith(termDefinition);
     } else {
-      this.els.panelElement.appendChild(termDefinition);
+      this.panelElement.appendChild(termDefinition);
     }
-  }
-
-  setTitle(title) {
-    this.els.titleElement.textContent = title;
   }
 
   toggle() {
@@ -155,8 +118,8 @@ class SidePanel extends Observable {
     if (this.isOpen) {
       return;
     }
-    this.els.panelElement.classList.add('open');
-    this.els.floatingButton.style.display = 'none';
+    this.panelElement.classList.add('open');
+    this.floatingButton.style.display = 'none';
     document.body.classList.add('side-panel-open');
     this.isOpen = true;
   }
@@ -165,8 +128,8 @@ class SidePanel extends Observable {
     if (!this.isOpen) {
       return;
     }
-    this.els.panelElement.classList.remove('open');
-    this.els.floatingButton.style.display = 'block';
+    this.panelElement.classList.remove('open');
+    this.floatingButton.style.display = 'block';
     document.body.classList.remove('side-panel-open');
     this.isOpen = false;
   }

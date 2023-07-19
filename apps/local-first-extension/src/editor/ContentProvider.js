@@ -16,6 +16,7 @@ export class ContentProvider extends Observable {
     this.sidePanel = sidePanel;
 
     this.render();
+    sidePanel.init();
 
     this.on('doc-update', (newDoc) => {
       this.doc = newDoc;
