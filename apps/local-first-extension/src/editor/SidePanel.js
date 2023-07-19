@@ -5,6 +5,8 @@ import { FloatingButton } from '../components/FloatingButton';
 import { Edit } from '../components/icons/Edit';
 import { TermDefinition } from '../components/TermDefinition';
 import { Header } from '../components/Header';
+import { SelectPropertyInfo } from '../components/SelectPropertyInfo';
+import { getYjsValue } from '@syncedstore/core';
 
 const breadCrumbId = 'bread-crumb';
 const termDefinitionId = 'property-section';
@@ -33,24 +35,33 @@ class SidePanel extends Observable {
     super();
 
     this.isOpen = false;
-    this.property = initProperty;
+    this.jsonld = null;
+    this.property = null;
+    this.propertyPath = [];
 
     this.panelElement = null;
     this.floatingButton = null;
 
-    this.on('update', (path) => {
-      console.log('SidePanel: update: ', path);
-      this.render(path);
+    this.on('path-update', (path) => {
+      console.log('SidePanel: updatePath: ', path);
+      this.propertyPath = path;
+      this.render();
     });
 
-    this.on('updateTermDefinition', (property) => {
+    this.on('td-update', (property) => {
       console.log('SidePanel: updateTermDefinition ');
       this.property = property;
       this.renderTermDefinition();
     });
+
+    this.on('jsonld-update', () => {
+      console.log('SidePanel: updateJsonld ');
+      this.render();
+    });
   }
 
-  init() {
+  init(jsonld) {
+    this.jsonld = jsonld;
     this._createButton();
     this._createPanel();
   }
@@ -79,16 +90,16 @@ class SidePanel extends Observable {
     document.body.appendChild(this.floatingButton);
   }
 
-  render(path) {
-    this.renderBreadcrumb(path);
-    this.renderTermDefinition(initProperty);
+  render() {
+    this.property = this.jsonld.getPropertyDescription(this.propertyPath);
+
+    this.renderBreadcrumb();
+    this.renderTermDefinition();
   }
 
-  renderBreadcrumb(path) {
-    const breadCrumb = BreadCrumb(breadCrumbId, path);
+  renderBreadcrumb() {
+    const breadCrumb = BreadCrumb(breadCrumbId, this.propertyPath);
     const existingBreadCrumb = document.getElementById(breadCrumbId);
-    console.log('existingBreadCrumb: ', existingBreadCrumb);
-    console.log('breadCrumb: ', breadCrumb);
     if (existingBreadCrumb) {
       existingBreadCrumb.replaceWith(breadCrumb);
     } else {
@@ -97,7 +108,13 @@ class SidePanel extends Observable {
   }
 
   renderTermDefinition() {
-    const termDefinition = TermDefinition(termDefinitionId, this.property);
+    console.log('renderTermDefinition: ', this.property);
+    console.log('jsonld context: ', getYjsValue(this.jsonld.context).toJSON());
+
+    let termDefinition = this.property
+      ? TermDefinition(termDefinitionId, this.property)
+      : SelectPropertyInfo(termDefinitionId);
+
     const existingPropertySection = document.getElementById(termDefinitionId);
     if (existingPropertySection) {
       existingPropertySection.replaceWith(termDefinition);

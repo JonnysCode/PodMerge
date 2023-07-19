@@ -6,10 +6,13 @@ import { t } from './util';
 import { Plus } from './icons/Plus';
 
 const render = (property) => {
-  sidePanel.emit('updateTermDefinition', [property]);
+  sidePanel.emit('td-update', [property]);
 };
 
-const updateSimpleTermDefinition = (value) => {};
+const updateSimpleTermDefinition = (term, definition) => {
+  sidePanel.jsonld?.addSimpleTermDefinition(term, definition);
+  //sidePanel.render();
+};
 
 const updateExtendedTermDefinition = (key, value) => {};
 
@@ -64,6 +67,17 @@ const SimpleTermDefinition = (id, property) => {
               'tw-py-1 tw-basis-1/2 tw-border-2 tw-border-gray-400 tw-rounded-lg tw-mt-3 hover:tw-bg-gray-400 hover:tw-text-white',
             click: () => {
               property.isExpandedTermDefinition = true;
+              if (isSimpleTermDefinition(property)) {
+                property.termDefinition = [
+                  {
+                    key: '@id',
+                    value: property.termDefinition.value,
+                    updating: true,
+                  },
+                ];
+              } else {
+                property.termDefinition = [];
+              }
               render(property);
             },
           },
@@ -76,22 +90,23 @@ const SimpleTermDefinition = (id, property) => {
         class:
           'tw-mt-3 tw-space-y-3 tw-divide-y tw-divide-gray-200 tw-border-t tw-border-gray-300 tw-text-base tw-leading-3',
       },
-      hasTermDefinition(property) && !isUpdating(property)
+      isSimpleTermDefinition(property) && !isUpdating(property)
         ? ValueItem(property)
         : UpdateValueItem(property)
     ),
   ]);
 };
 
-const hasTermDefinition = (property) => {
+const isSimpleTermDefinition = (property) => {
   return (
+    property.termDefinition &&
     Object.hasOwn(property.termDefinition, 'value') &&
     Object.hasOwn(property.termDefinition, 'updating')
   );
 };
 
 const isUpdating = (property) => {
-  return property.termDefinition.updating;
+  return property.termDefinition && property.termDefinition.updating;
 };
 
 const ExtendedTermDefinition = (id, property) => {
@@ -108,6 +123,15 @@ const ExtendedTermDefinition = (id, property) => {
               'tw-py-1 tw-basis-1/2 tw-border-2 tw-border-gray-400 tw-rounded-lg tw-mt-3 hover:tw-bg-gray-400 hover:tw-text-white',
             click: () => {
               property.isExpandedTermDefinition = false;
+              if (isExpandedTermDefinition(property)) {
+                property.termDefinition = {
+                  value:
+                    property.termDefinition.find((td) => td.key === '@id')
+                      .value || '',
+                  updating: true,
+                };
+              }
+              property.termDefinition = { value: '', updating: true };
               render(property);
             },
           },
@@ -131,7 +155,7 @@ const ExtendedTermDefinition = (id, property) => {
         ...property.termDefinition.map((kv, i) =>
           kv.updating
             ? UpdateKeyValueItem(property, i)
-            : KeyValueItem(kv.key, kv.value, i)
+            : KeyValueItem(property, i)
         ),
         t.div(
           {
@@ -158,10 +182,22 @@ const ExtendedTermDefinition = (id, property) => {
   ]);
 };
 
-const KeyValueItem = (key, value, index) => {
+const isExpandedTermDefinition = (property) => {
+  return (
+    property.termDefinition &&
+    Array.isArray(property.termDefinition) &&
+    property.termDefinition.length > 0
+  );
+};
+
+const KeyValueItem = (property, index) => {
+  const key = property.termDefinition[index].key;
+  const value = property.termDefinition[index].value;
+
   const handleUpdate = () => {
     console.log('handleEdit: ', key, value, index);
-    sidePanel.emit('editProperty', [index]);
+    property.termDefinition[index].updating = true;
+    render(property);
   };
 
   return t.div({ class: 'tw-flex tw-flex-row tw-pt-3' }, [
@@ -240,6 +276,7 @@ const UpdateKeyValueItem = (property, index) => {
   };
 
   const handleDelete = () => {
+    // TODO: If it is a new entry, it is not yet in the array
     property.termDefinition.splice(index, 1);
     render(property);
   };
@@ -275,11 +312,15 @@ const UpdateKeyValueItem = (property, index) => {
 const UpdateValueItem = (property) => {
   const valueId = 'update-value';
 
-  const value = property.termDefinition.value || '';
+  const value = property.termDefinition?.value || '';
 
   const handleUpdate = () => {
-    property.termDefinition.updating = false;
-    property.termDefinition.value = getValueOfInput(valueId);
+    updateSimpleTermDefinition(property.name, getValueOfInput(valueId));
+
+    property.termDefinition = {
+      value: getValueOfInput(valueId),
+      updating: false,
+    };
     render(property);
   };
 

@@ -16,11 +16,12 @@ export class ContentProvider extends Observable {
     this.sidePanel = sidePanel;
 
     this.render();
-    sidePanel.init();
+    sidePanel.init(doc);
 
     this.on('doc-update', (newDoc) => {
       this.doc = newDoc;
       this.render();
+      sidePanel.emit('jsonld-update', []);
     });
   }
 
@@ -67,7 +68,7 @@ export class ContentProvider extends Observable {
     const property = this.doc.getPropertyDescription(path);
     console.log('property: ', property);
 
-    this.sidePanel.emit('update', [path]);
+    this.sidePanel.emit('path-update', [path]);
   }
 
   applyUpdate(update) {

@@ -7,7 +7,6 @@ export const t = new Proxy(
         for (let attr in attrs) {
           if (attrs[attr] !== false) {
             if (typeof attrs[attr] === 'function') {
-              console.log('adding event listener', attr);
               el.addEventListener(attr, attrs[attr]);
             } else {
               el.setAttribute(attr, attrs[attr]);

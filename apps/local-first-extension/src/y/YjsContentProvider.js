@@ -6,7 +6,6 @@ export class YjsContentProvider extends ContentProvider {
     super(data, dataAttribute);
 
     this.ydoc = data.doc;
-    this.store = data.store;
 
     this.ydoc.on('update', (update, origin) => {
       if (origin !== this && origin !== null) {

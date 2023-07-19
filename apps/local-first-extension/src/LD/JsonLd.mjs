@@ -127,6 +127,10 @@ export class JsonLD {
     }
     const propertyPath = [...path];
 
+    if (propertyPath.length === 0) {
+      return null;
+    }
+
     // get last element in properties that is not numeric -> assuming these are array indices
     let property = propertyPath.pop();
     while (isNumeric(property)) {
@@ -141,6 +145,8 @@ export class JsonLD {
       termDefinition = Object.entries(termDefinition).map(([key, value]) => {
         return { term: key, definition: value, updating: false };
       });
+    } else if (termDefinition && typeof termDefinition === 'string') {
+      termDefinition = { value: termDefinition, updating: false };
     }
 
     return {
@@ -160,6 +166,8 @@ export class JsonLD {
   }
 
   addSimpleTermDefinition(term, definition) {
+    console.log('addSimpleTermDefinition: ', term, definition);
+
     if (this.isCompactIri(definition)) {
       this.addVocabToContext(this.getPrefix(definition));
     }
@@ -279,18 +287,15 @@ export class JsonLD {
 
   addVocabToContext(prefix, vocab = null) {
     if (!vocab) {
-      if (this.prefixInContext(prefix)) return;
+      if (prefix in this.context) return;
       if (!prefix in ontologies) {
         throw new Error('Vocab for prefix not found');
       }
       vocab = ontologies[prefix];
     }
 
-    this.root['@context'][property] = vocab;
-  }
-
-  prefixInContext(prefix) {
-    return prefix in this.root['@context'];
+    console.log('addVocabToContext: ', prefix, vocab);
+    this.context[prefix] = vocab;
   }
 
   addProperty(target, prop, property, value) {
@@ -440,7 +445,6 @@ function containsProperty(target, property) {
   return Object.hasOwn(target, property);
 }
 
-function isNumeric(str) {
-  if (typeof str != 'string') return false;
-  return !isNaN(str) && !isNaN(parseFloat(str));
+function isNumeric(candidate) {
+  return !isNaN(candidate) && !isNaN(parseFloat(candidate));
 }
