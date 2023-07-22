@@ -32,4 +32,5 @@ async function onBtnClick(type) {
   console.log(`${type} button clicked`);
 
   await sendTabMessage(type, { message: `payload ${type} message` });
+  window.close();
 }
