@@ -1,4 +1,4 @@
-# `<img src="public/icons/icon_48.png" width="45" align="left">` Collaborative Linked Data Extension
+# <img src="public/icons/icon_48.png" width="45" align="left"> Collaborative Linked Data Extension
 
 > Make (Semantic) Web content collaboratively editable through CRDTs and a dedicated hypermedia controls vocabulary.
 
@@ -10,9 +10,22 @@ We introduce this vocabulary for describing interactions with CRDT-based resourc
 - **Collaborative Linked Data Extension:** Users with this extensions can comsume the CRDO and collaborate in real-time on the Web content and Linked Data annotations of that content.
 - **Use with Solid Pods:** If you use Solid Pods to store your data and description you can keep full control and add access control for readers and collaborators
 
-## Install
+## Getting Started
 
-[**Chrome** extension]() `<!-- TODO: Add chrome extension link inside parenthesis -->`
+```sh
+npm install
+npm run dev
+```
+
+Runs the app and WebRTC server in development mode.
+Then follow these instructions to see your app:
+
+1. Open chrome://extensions
+2. Check the Developer mode checkbox
+3. Click on the Load unpacked extension button
+4. Select the folder collaborative-linked-data/build
+
+Visit a website with a CRDO description, JSON(-LD) content, and data-path attribute and start collaborating.
 
 ## Contribution
 
