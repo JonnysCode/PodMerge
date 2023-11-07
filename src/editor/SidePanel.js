@@ -6,7 +6,7 @@ import { Edit } from '../components/icons/Edit';
 import { TermDefinition } from '../components/TermDefinition';
 import { Header } from '../components/Header';
 import { SelectPropertyInfo } from '../components/SelectPropertyInfo';
-import { getYjsValue } from '@syncedstore/core';
+import { getYjsValue, observeDeep } from '@syncedstore/core';
 
 const breadCrumbId = 'bread-crumb';
 const termDefinitionId = 'property-section';
@@ -31,19 +31,23 @@ class SidePanel extends Observable {
     });
 
     this.on('td-update', (property) => {
-      console.log('SidePanel: updateTermDefinition ');
+      console.log('[SidePanel] Update TermDefinition...');
       this.property = property;
       this.renderTermDefinition();
     });
 
-    this.on('jsonld-update', () => {
-      console.log('SidePanel: updateJsonld ');
+    this.on('context-update', () => {
+      console.log('[SidePanel] Update context...');
       this.render();
     });
   }
 
   init(jsonld) {
     this.jsonld = jsonld;
+    observeDeep(this.jsonld.context, (events) => {
+      console.log('SidePanel: observeDeep: ', events);
+      this.emit('context-update', []);
+    });
     this._createButton();
     this._createPanel();
   }

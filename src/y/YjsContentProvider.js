@@ -1,4 +1,4 @@
-import * as Y from 'yjs';
+import { observeDeep, Y } from '@syncedstore/core';
 import { ContentProvider } from '../editor/ContentProvider';
 
 export class YjsContentProvider extends ContentProvider {

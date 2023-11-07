@@ -69,9 +69,6 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       store = request.payload.store;
       console.log('[AM_CREATED] DataStore: ', store);
     case 'LOG':
-      console.log('Session: ', session);
-      console.log('Framework: ', await ldStore.getFramework());
-      //await ldStore.log();
       console.log(jsonld.toJsonLd());
       break;
     case 'TEST':

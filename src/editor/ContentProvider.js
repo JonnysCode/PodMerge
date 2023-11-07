@@ -1,10 +1,6 @@
 import { Observable } from 'lib0/observable';
 import { sendGlobalMessage } from '../util';
-import {
-  constructUpdate,
-  dataPathToArray,
-  dataPathToStringArray,
-} from './util';
+import { dataPathToArray } from './util';
 import { sidePanel } from './SidePanel';
 
 export class ContentProvider extends Observable {
