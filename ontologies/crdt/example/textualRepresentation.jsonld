@@ -1,0 +1,34 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@base": "https://imp.inrupt.net/local-first/blog/",
+    "schema": "http://schema.org/",
+    "crdo": "https://imp.inrupt.net/ontologies/crdo.ttl#",
+    "headline": "schema:headline",
+    "articleBody": {
+      "@id": "schema:articleBody",
+      "@type": "crdo:Text"
+    },
+    "keywords": {
+      "@id": "schema:keywords",
+      "@type": "crdo:List"
+    },
+    "hasCRD": {
+      "@id": "crdo:hasCollaborativeResourceDescription",
+      "@type": "@id"
+    }
+  },
+  "@id": "content.jsonld",
+  "@type": [
+    "schema:BlogPosting",
+    "crdo:TextualRepresentation"
+  ],
+  "hasCRD": "context.ttl",
+  "headline": "World of Coffee",
+  "articleBody": "This blog post explores ...",
+  "keywords": [
+    "coffee",
+    "brewing",
+    "history"
+  ]
+}

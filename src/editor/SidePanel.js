@@ -12,24 +12,6 @@ const breadCrumbId = 'bread-crumb';
 const termDefinitionId = 'property-section';
 const floatingButtonId = 'floating-button';
 
-const initProperty = {
-  name: 'articleBody',
-  path: ['about', 'p', '[1]'],
-  isExpandedTermDefinition: true,
-  termDefinition: [
-    {
-      key: '@id',
-      value: 'https://example.com/articleBody',
-      updating: false,
-    },
-    {
-      key: '@type',
-      value: '@id',
-      updating: false,
-    },
-  ],
-};
-
 class SidePanel extends Observable {
   constructor() {
     super();
@@ -151,5 +133,7 @@ class SidePanel extends Observable {
     this.isOpen = false;
   }
 }
+
+export const toggleDataView = () => {};
 
 export const sidePanel = new SidePanel();

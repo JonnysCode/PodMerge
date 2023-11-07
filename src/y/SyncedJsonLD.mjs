@@ -2,10 +2,15 @@ import syncedStore, {
   SyncedMap,
   getYjsDoc,
   getYjsValue,
+  Y,
 } from '@syncedstore/core';
+import { base64ToBytes, bytesToBase64 } from 'byte-base64';
+
 import { JsonLD, CONSTRUCTOR_KEY } from '../LD/JsonLd.mjs';
 import ontologies from '../LD/data/ontologies.json' assert { type: 'json' };
 import { nestedYDocFromJson } from './util.mjs';
+
+const ROOT_PROPERTY = 'jsonld';
 
 export class SyncedJsonLD extends JsonLD {
   /**
@@ -16,11 +21,11 @@ export class SyncedJsonLD extends JsonLD {
    *                         Yjs can only store synced types in its root, hence the need
    *                         for a root property.
    */
-  constructor(store, CONSTRUCTOR_KEY, rootProperty = null) {
+  constructor(store, CONSTRUCTOR_KEY, rootProperty = ROOT_PROPERTY) {
     super(store, CONSTRUCTOR_KEY, rootProperty);
   }
 
-  static fromJson(json, url = null, rootProperty = 'jsonld') {
+  static fromJson(json, url = null, rootProperty = ROOT_PROPERTY) {
     let jsonld = addContext(json, url);
     let store = syncedStoreWithRoot(rootProperty);
 
@@ -33,7 +38,7 @@ export class SyncedJsonLD extends JsonLD {
     );
   }
 
-  static fromYStore(store, url = null, rootProperty = 'jsonld') {
+  static fromYStore(store, url = null, rootProperty = ROOT_PROPERTY) {
     let context = {
       '@version': 1.1,
       crdt: ontologies.crdt,
@@ -51,6 +56,13 @@ export class SyncedJsonLD extends JsonLD {
     );
   }
 
+  static fromYState(state, rootProperty = ROOT_PROPERTY) {
+    const store = syncedStoreWithRoot(rootProperty);
+    Y.applyUpdate(getYjsDoc(store), base64ToBytes(state));
+
+    return this.classProxy(new SyncedJsonLD(store, CONSTRUCTOR_KEY));
+  }
+
   get doc() {
     return getYjsDoc(this.data);
   }
@@ -61,6 +73,14 @@ export class SyncedJsonLD extends JsonLD {
 
   get store() {
     return this.data;
+  }
+
+  get state() {
+    return bytesToBase64(Y.encodeStateAsUpdate(this.doc));
+  }
+
+  get json() {
+    return JSON.stringify(this.doc.toJSON());
   }
 }
 
@@ -80,7 +100,7 @@ function addContext(json, url = null) {
   return jsonld;
 }
 
-function syncedStoreWithRoot(rootProperty = 'jsonld') {
+function syncedStoreWithRoot(rootProperty) {
   let rootShape = {};
   rootShape[rootProperty] = {};
 

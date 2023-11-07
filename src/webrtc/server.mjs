@@ -87,6 +87,7 @@ const onconnection = (conn) => {
       if (typeof message === 'string') {
         message = JSON.parse(message);
       }
+      console.log('message: ', message);
       if (message && message.type && !closed) {
         switch (message.type) {
           case 'subscribe':

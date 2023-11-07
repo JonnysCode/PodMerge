@@ -8,8 +8,8 @@ export class YjsContentProvider extends ContentProvider {
     this.ydoc = data.doc;
 
     this.ydoc.on('update', (update, origin) => {
+      console.log('[YjsContentProvider] Update from: ', origin);
       if (origin !== this && origin !== null) {
-        console.log('[HTML Provider] Update from ', origin);
         this.emit('external-update', [update]);
       }
     });

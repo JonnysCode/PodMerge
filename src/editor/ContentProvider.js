@@ -51,9 +51,11 @@ export class ContentProvider extends Observable {
   }
 
   handleInputChange(event) {
-    const updatedValue = event.target.textContent;
-    const dataPath = event.target.getAttribute(this.dataAttribute);
-    this.applyUpdate(constructUpdate(dataPath, updatedValue));
+    const element = event.target;
+    const value = element.textContent;
+    const path = this.dataPathFor(element);
+
+    this.applyUpdate({ path, value });
   }
 
   addClickListener(element) {
@@ -77,6 +79,7 @@ export class ContentProvider extends Observable {
 
   valueFor(dataAttribute) {
     const storagePath = dataPathToArray(dataAttribute);
+
     let currentObj = this.doc;
     for (let i = 0; i < storagePath.length; i++) {
       currentObj = currentObj[storagePath[i]];

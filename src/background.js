@@ -36,15 +36,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'STATE':
       response = { state: amStore.state, json: amStore.json };
       break;
-    case 'GREETINGS':
-      const message = `Hi ${
-        sender.tab ? 'Con' : 'Pop'
-      }, my name is Bac. I am from Background. It's great to hear from you.`;
-      console.log(request.payload.message);
-      response = {
-        message,
-      };
-      break;
     default:
       console.log(
         '[Background] Unknown message received ',

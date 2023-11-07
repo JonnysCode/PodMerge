@@ -26,10 +26,10 @@ export class LDStore {
   }
 
   async isCollaborativeResource() {
-    const isDesc =
-      iriName(await this.description.type.value) ===
-      'CollaborativeResourceDescription';
-    return isDesc;
+    const descType = await this.description.type.value;
+    console.log('Description type: ', descType);
+
+    return iriName(descType) === 'CollaborativeResourceDescription';
   }
 
   async log() {

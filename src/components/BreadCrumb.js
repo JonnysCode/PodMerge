@@ -18,9 +18,11 @@ export const BreadCrumb = (id, path) => {
         [
           t.li({}, [
             t.div({}, [
-              t.a(
+              t.button(
                 {
-                  href: '#',
+                  open: () => {
+                    console.log('open modal');
+                  },
                   class:
                     'tw-flex tw-flex-row tw-text-gray-600 hover:tw-text-gray-800',
                 },
@@ -50,6 +52,23 @@ export const BreadCrumb = (id, path) => {
             ]);
           }),
         ]
+      ),
+    ]
+  );
+};
+
+const FullDocumentView = (jsonld) => {
+  return t.div(
+    {
+      class:
+        'tw-fixed tw-w-full tw-h-full tw-bg-gray-500 tw-bg-opacity-75 tw-transition-opacity',
+    },
+    [
+      t.div(
+        {
+          class: 'tw-flex tw-flex-col tw-overflow-auto tw-h-full',
+        },
+        ['Full Document View']
       ),
     ]
   );

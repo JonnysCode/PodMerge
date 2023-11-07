@@ -1,78 +1,80 @@
 @prefix : <#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix crdt: <https://imp.inrupt.net/ontologies/crdt.ttl#>.
+@prefix crdo: <https://imp.inrupt.net/ontologies/crdo.ttl#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix http: <http://www.w3.org/2011/http#>.
 @prefix hctl: <https://www.w3.org/2019/wot/hypermedia#>.
 
-@base <https://imp.inrupt.net/local-first/blog/index.html>.
+@base <https://imp.inrupt.net/local-first/blog/context.ttl>.
 
 :description
-    a crdt:CollaborativeResourceDescription ;
-    crdt:title "A coffee blog";
-    crdt:description "A coffee blog with collaborative editing and linked data annotations";
-    crdt:created "2022-11-14T19:10:23.824Z" ;
-    crdt:modified "2023-06-01T09:12:43.124Z" ;
-    crdt:document :document;
-    crdt:textualRepresentation :textualRepresentation.
+    a crdo:CollaborativeResourceDescription ;
+    crdo:title "A coffee blog";
+    crdo:description "A coffee blog with collaborative editing and linked data annotations";
+    crdo:created "2022-11-14T19:10:23.824Z" ;
+    crdo:modified "2023-06-01T09:12:43.124Z" ;
+    crdo:dataAttribute "data-yjs";
+    crdo:document :document;
+    crdo:textualRepresentation :textualRepresentation.
 
 :document
-    a crdt:DocumentDescription;
-    crdt:framework crdt:Yjs ;
-    crdt:operation
+    a crdo:DocumentDescription;
+    crdo:framework crdo:Yjs ;
+    crdo:operation
         [
-            a crdt:WebOperation ;
-            crdt:operationType crdt:Read ;
+            a crdo:WebOperation ;
+            crdo:operationType crdo:Read ;
             hctl:forContentType "application/octet-stream" ;
             http:methodName "GET" ;
             hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
         ],
         [
-            a crdt:WebOperation ;
-            crdt:operationType crdt:Update ;
+            a crdo:WebOperation ;
+            crdo:operationType crdo:Update ;
             hctl:forContentType "application/octet-stream" ;
             http:methodName "PUT" ;
             hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.bin" ;
         ],
         [
-            a crdt:FrameworkOperation ;
-            crdt:dependency crdt:Yjs, [ a crdt:FrameworkExtension; crdt:name "y-webrtc" ] ;
-            crdt:operationType crdt:Synchronize ;
-            crdt:syncMechanism crdt:WebRTC ;
-            crdt:withInput [
-                    a crdt:Input;
-                    crdt:name "name";
-                    rdf:value "coffeeBlog"^^xsd:string ;
-                    crdt:isRequired true
-                ],
+            a crdo:FrameworkOperation ;
+            crdo:dependency crdo:Yjs, [ a crdo:FrameworkExtension; crdo:name "y-webrtc" ] ;
+            crdo:operationType crdo:Synchronize ;
+            crdo:syncMechanism crdo:WebRTC ;
+            crdo:withInput 
                 [
-                    a crdt:Input;
-                    crdt:name "roomId";
-                    rdf:value "room-id-bv1823dg"^^xsd:string ;
-                    crdt:isRequired true
+                    a crdo:Input; 
+                    crdo:name "name"; 
+                    rdf:value "coffeeBlog"^^xsd:string ; 
+                    crdo:isRequired true 
                 ],
+                [ 
+                    a crdo:Input;
+                    crdo:name "roomId"; 
+                    rdf:value "room-id-bv1823dg"^^xsd:string ; 
+                    crdo:isRequired true 
+                    ],
                 [
-                    a crdt:Input;
-                    crdt:name "password";
+                    a crdo:Input;
+                    crdo:name "password";
                     rdf:value "IUS3d7ezA)Sahsdi"^^xsd:string ;
-                    crdt:isRequired true
+                    crdo:isRequired true
                 ];
         ].
 
 :textualRepresentation
-    a crdt:TextualRepresentationDescription;
-    crdt:operation
+    a crdo:TextualRepresentationDescription;
+    crdo:operation
         [
-            a crdt:WebOperation ;
-            crdt:operationType crdt:Read ;
+            a crdo:WebOperation ;
+            crdo:operationType crdo:Read ;
             hctl:forContentType "application/ld+json" ;
             http:methodName "GET" ;
             hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;
         ],
         [
-            a crdt:WebOperation ;
-            crdt:operationType crdt:Update ;
+            a crdo:WebOperation ;
+            crdo:operationType crdo:Update ;
             hctl:forContentType "application/ld+json" ;
             http:methodName "PUT" ;
             hctl:hasTarget "https://imp.inrupt.net/local-first/blog/content.jsonld" ;

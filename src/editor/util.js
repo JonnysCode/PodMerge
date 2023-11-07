@@ -19,7 +19,3 @@ export function dataPathToArray(str, delimiter = '-') {
 export function dataPathToStringArray(str, delimiter = '-') {
   return str.split(delimiter);
 }
-
-export function constructUpdate(dataPath, updatedValue) {
-  return { path: dataPathToArray(dataPath), value: updatedValue };
-}

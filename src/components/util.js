@@ -1,7 +1,7 @@
 export const t = new Proxy(
   {},
   {
-    get(target, property, receiver) {
+    get(_target, property, _receiver) {
       return (attrs, ...children) => {
         const el = document.createElement(property);
         for (let attr in attrs) {
@@ -29,7 +29,7 @@ export const t = new Proxy(
 export const s = new Proxy(
   {},
   {
-    get(target, property, receiver) {
+    get(_target, property, _receiver) {
       return (attrs, children) => {
         const el = document.createElementNS(
           'http://www.w3.org/2000/svg',

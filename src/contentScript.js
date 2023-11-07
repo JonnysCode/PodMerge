@@ -27,7 +27,11 @@ let contentProvider = null;
 
 const ldStore = new LDStore(baseUrl + 'context.ttl');
 
-const hasDesc = await ldStore.isCollaborativeResource();
+if (!(await ldStore.isCollaborativeResource())) {
+  console.log('No description found!');
+  process.exit(1);
+}
+
 const framework = await ldStore.getFramework();
 console.log('Framework: ', framework);
 
@@ -49,8 +53,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       session = await loginSolid();
       break;
     case 'EDIT':
-      //initFromState();
-      initFromJson();
+      initFromState();
+      //initFromJson();
       break;
     case 'SYNC':
       initSync();
@@ -87,8 +91,9 @@ async function initFromState() {
   let state = await ldStore.getDocument();
 
   if (framework === 'Yjs') {
-    store = YjsStore.fromDocState(baseUrl, state);
-    contentProvider = new YjsContentProvider(store.rootStore);
+    //jsonld = YjsStore.fromDocState(baseUrl, state);
+    jsonld = SyncedJsonLD.fromYState(state);
+    contentProvider = new YjsContentProvider(jsonld);
   } else if (framework === 'Automerge') {
     const response = await sendGlobalMessage('INIT', {
       name: baseUrl,
@@ -124,7 +129,7 @@ async function initSync() {
 
   if (framework === 'Yjs') {
     //store.initWebrtcProvider();
-    new WebrtcProvider('demo', jsonld.doc, {
+    new WebrtcProvider('demo1-', jsonld.doc, {
       signaling: ['ws://localhost:4444'],
     });
   } else if (framework === 'Automerge') {
@@ -138,8 +143,8 @@ async function save() {
   let state,
     json = null;
   if (framework === 'Yjs') {
-    state = store.state;
-    json = store.json;
+    state = jsonld.state;
+    json = jsonld.json;
   } else if (framework === 'Automerge') {
     let response = await sendGlobalMessage('STATE', {});
     state = response.state;
