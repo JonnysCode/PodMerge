@@ -191,6 +191,10 @@ export class JsonLD {
     this.context[term][key] = definition;
   }
 
+  removeExtendedTermDefinition(term, key) {
+    this.context[term].delete(key);
+  }
+
   /**
    * Example:
    *    target, prop: { number: 12, val: 'foo' }, null -> { '@value': { number: 12, val: 'foo' }}

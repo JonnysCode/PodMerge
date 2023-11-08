@@ -45,7 +45,7 @@ class SidePanel extends Observable {
   init(jsonld) {
     this.jsonld = jsonld;
     observeDeep(this.jsonld.context, (events) => {
-      console.log('SidePanel: observeDeep: ', events);
+      console.log('[SidePanel] observeDeep: ', events);
       this.emit('context-update', []);
     });
     this._createButton();

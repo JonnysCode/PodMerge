@@ -63,6 +63,12 @@ export class SyncedJsonLD extends JsonLD {
     return this.classProxy(new SyncedJsonLD(store, CONSTRUCTOR_KEY));
   }
 
+  sync(room) {
+    this.webrtcProvider = new WebrtcProvider(room, this.doc, {
+      signaling: ['ws://localhost:4444'],
+    });
+  }
+
   get doc() {
     return getYjsDoc(this.data);
   }

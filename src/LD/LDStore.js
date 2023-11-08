@@ -61,17 +61,12 @@ export class LDStore {
       'Content-Type': format,
     };
 
-    console.log('Save document Header: ', header);
-
     await logOperation(operation);
     return await this.invokeOperation(operation, header, document);
   }
 
   async saveJSON(json) {
-    const operation = await getOperationByType(
-      this.description.representation,
-      'Update'
-    );
+    const operation = await getOperationByType(this.representation, 'Update');
 
     const header = {
       'Content-Type': await operation.contentType.value,
@@ -81,6 +76,19 @@ export class LDStore {
 
     await logOperation(operation);
     return await this.invokeOperation(operation, header, json);
+  }
+
+  async saveJsonLd(jsonld) {
+    const operation = await getOperationByType(this.representation, 'Update');
+
+    const header = {
+      'Content-Type': await operation.contentType.value,
+    };
+
+    console.log('Save JSON header: ', header);
+
+    await logOperation(operation);
+    return await this.invokeOperation(operation, header, jsonld);
   }
 
   async invokeOperation(operation, header, body) {

@@ -14,9 +14,14 @@ const updateSimpleTermDefinition = (term, definition) => {
   //sidePanel.render();
 };
 
-const updateExtendedTermDefinition = (key, value) => {};
+const updateExtendedTermDefinition = (term, key, definition) => {
+  console.log('updateExtendedTermDefinition: ', term, key, definition);
+  sidePanel.jsonld?.addExtendedTermDefinition(term, key, definition);
+};
 
-const removeExtendedTermDefinition = (key) => {};
+const removeExtendedTermDefinition = (term, key) => {
+  sidePanel.jsonld?.removeExtendedTermDefinition(term, key);
+};
 
 export const TermDefinition = (id, property) => {
   return t.div(
@@ -268,6 +273,12 @@ const UpdateKeyValueItem = (property, index) => {
   const value = property.termDefinition[index].value;
 
   const handleUpdate = () => {
+    /*updateExtendedTermDefinition(
+      property.name,
+      getValueOfInput(keyId),
+      getValueOfInput(valueId)
+    );*/
+
     property.termDefinition[index].updating = false;
     property.termDefinition[index].key = getValueOfInput(keyId);
     property.termDefinition[index].value = getValueOfInput(valueId);

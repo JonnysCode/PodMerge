@@ -3,7 +3,6 @@
 import './contentScript.css';
 import './main.css';
 
-import { YjsStore } from './y/YjsStore.mjs';
 import { LDStore } from './LD/LDStore.js';
 import { getSession, loginSolid } from './solid/auth.js';
 import { sendGlobalMessage } from './util.js';
@@ -26,6 +25,8 @@ let session = getSession();
 let contentProvider = null;
 
 const ldStore = new LDStore(baseUrl + 'context.ttl');
+
+ldStore.log();
 
 if (!(await ldStore.isCollaborativeResource())) {
   console.log('No description found!');
@@ -129,6 +130,7 @@ async function initSync() {
     new WebrtcProvider('demo1-', jsonld.doc, {
       signaling: ['ws://localhost:4444'],
     });
+    //jsonld.sync('demo-iswc');
   } else if (framework === 'Automerge') {
     console.log('Currently no sync for Automerge');
   }
@@ -149,9 +151,10 @@ async function save() {
   }
 
   console.log('DocState: ', state);
-  console.log('JSON: ', json);
+  console.log('JSON-LD: ', json);
 
   await ldStore.saveDocument(state);
+  await ldStore.saveJsonLd(json);
 }
 
 async function getJSON(url) {
