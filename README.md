@@ -1,8 +1,8 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Collaborative Linked Data Extension
+# <img src="public/icons/icon_64.png" width="45" align="left"> PodMerge Browser Extension
 
 > Make (Semantic) Web content collaboratively editable through CRDTs and a dedicated hypermedia controls vocabulary.
 
-We introduce this vocabulary for describing interactions with CRDT-based resources hosted in Solid Pods, which allows software clients to discover at run-time the required means for collaboratively editing the resources. You can use this Collaborative Linked Data Chrome Extension to consume the discription and makes the Web blog's content and its Linked Data annotations collaboratively editablebthrough CRDTs ([Yjs](https://github.com/yjs/yjs), [Automerge](https://github.com/automerge/automerge)).
+We introduce the PodMerge approach including the Collaborative Resource Description Ontology (CRDO) vocabulary for describing interactions with CRDT-based resources hosted in Solid Pods. This allows software clients to discover at run-time the required means for collaboratively editing the resources. You can use this PodMerge Chrome Extension to consume the discription and makes the Web blog's content and its Linked Data annotations collaboratively editablebthrough CRDTs ([Yjs](https://github.com/yjs/yjs), [Automerge](https://github.com/automerge/automerge)).
 
 ## Features
 
@@ -17,7 +17,7 @@ npm install
 npm run dev
 ```
 
-Runs the app and WebRTC server in development mode.
+Runs the app and WebRTC signaling server in development mode.
 Then follow these instructions to see your app:
 
 1. Open chrome://extensions
