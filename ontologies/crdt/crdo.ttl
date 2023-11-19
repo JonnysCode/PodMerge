@@ -41,37 +41,32 @@ crdo:Value rdf:type rdfs:Datatype .
 #    Object Properties
 #################################################################
 
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasCollaborationMechanism
-crdo:hasCollaborationMechanism rdf:type owl:ObjectProperty ;
-                               rdfs:domain crdo:CollaborativeResourceDescription .
-
-
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasDependency
-crdo:hasDependency rdf:type owl:ObjectProperty ;
-                   rdfs:range crdo:Dependency .
-
-
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasDescription
-crdo:hasDescription rdf:type owl:ObjectProperty ;
-                    rdfs:domain crdo:CollaborativeResourceDescription ,
-                                crdo:Description ;
-                    rdfs:range crdo:Description .
-
-
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasDocumentDescription
-crdo:hasDocumentDescription rdf:type owl:ObjectProperty ;
+###  https://imp.inrupt.net/ontologies/crdo.ttl#collaborationMechanism
+crdo:collaborationMechanism rdf:type owl:ObjectProperty ;
                             rdfs:domain crdo:CollaborativeResourceDescription .
 
 
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasLibrary
-crdo:hasLibrary rdf:type owl:ObjectProperty ;
-                rdfs:domain crdo:CollaborativeResourceDescription ;
-                rdfs:range crdo:Library .
+###  https://imp.inrupt.net/ontologies/crdo.ttl#dependency
+crdo:dependency rdf:type owl:ObjectProperty ;
+                rdfs:range crdo:Dependency .
 
 
-###  https://imp.inrupt.net/ontologies/crdo.ttl#hasTextualRepresentationDescription
-crdo:hasTextualRepresentationDescription rdf:type owl:ObjectProperty ;
-                                         rdfs:domain crdo:CollaborativeResourceDescription .
+###  https://imp.inrupt.net/ontologies/crdo.ttl#description
+crdo:description rdf:type owl:ObjectProperty ;
+                 rdfs:domain crdo:CollaborativeResourceDescription ,
+                             crdo:Description ;
+                 rdfs:range crdo:Description .
+
+
+###  https://imp.inrupt.net/ontologies/crdo.ttl#documentDescription
+crdo:documentDescription rdf:type owl:ObjectProperty ;
+                         rdfs:domain crdo:CollaborativeResourceDescription .
+
+
+###  https://imp.inrupt.net/ontologies/crdo.ttl#library
+crdo:library rdf:type owl:ObjectProperty ;
+             rdfs:domain crdo:CollaborativeResourceDescription ;
+             rdfs:range crdo:Library .
 
 
 ###  https://imp.inrupt.net/ontologies/crdo.ttl#operation
@@ -95,6 +90,11 @@ crdo:operations rdf:type owl:ObjectProperty ;
 crdo:syncMechanism rdf:type owl:ObjectProperty ;
                    rdfs:domain crdo:Operation ;
                    rdfs:range crdo:SynchronizationMechanism .
+
+
+###  https://imp.inrupt.net/ontologies/crdo.ttl#textualRepresentationDescription
+crdo:textualRepresentationDescription rdf:type owl:ObjectProperty ;
+                                      rdfs:domain crdo:CollaborativeResourceDescription .
 
 
 ###  https://imp.inrupt.net/ontologies/crdo.ttl#withInput
