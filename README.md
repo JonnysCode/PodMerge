@@ -23,9 +23,10 @@ Then follow these instructions to see your app:
 1. Open chrome://extensions
 2. Check the Developer mode checkbox
 3. Click on the Load unpacked extension button
-4. Select the folder collaborative-linked-data/build
+4. Select the folder .../PodMerge/build
 
 Visit a website with a CRDO description, JSON(-LD) content, and data-path attribute and start collaborating.
+An example site can be found here: [https://imp.inrupt.net/local-first/blog/](https://imp.inrupt.net/local-first/blog/)
 
 ## Contribution
 
